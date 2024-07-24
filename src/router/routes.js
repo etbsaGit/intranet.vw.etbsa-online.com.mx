@@ -23,6 +23,10 @@ const routes = [
         path: "/catalogos",
         component: () => import("src/pages/catalogos/indexPage.vue"),
       },
+      {
+        path: "/vehicle",
+        component: () => import("src/pages/vehicle/VehiclePage.vue"),
+      },
     ],
   },
 
