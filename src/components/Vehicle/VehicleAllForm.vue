@@ -9,6 +9,7 @@
     narrow-indicator
   >
     <q-tab name="info" icon="local_shipping" label="Informacion" />
+    <q-tab name="features" icon="featured_play_list" label="Caracteristicas" />
   </q-tabs>
   <q-separator></q-separator>
   <q-tab-panels
@@ -36,6 +37,20 @@
         />
       </q-card>
     </q-tab-panel>
+    <q-tab-panel name="features">
+      <q-card class="q-pa-sm">
+        <q-item dense>
+          <q-item-section>
+            <q-item-label class="text-h6"> Caracteristicas </q-item-label>
+          </q-item-section>
+        </q-item>
+        <vehicle-feature-index
+          ref="edit"
+          :vehicle="currentVehicle"
+          :key="currentVehicle"
+        />
+      </q-card>
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -44,11 +59,11 @@ import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
 import VehicleForm from "src/components/Vehicle/VehicleForm.vue";
+import VehicleFeatureIndex from "src/components/VehicleFeature/VehicleFeatureIndex.vue";
 
 const { vehicle } = defineProps(["vehicle"]);
 
 const tab = ref("info");
-const splitterModel = ref(15);
 const currentVehicle = ref(null);
 const edit = ref(null);
 
