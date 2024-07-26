@@ -11,6 +11,7 @@
     <q-tab name="info" icon="local_shipping" label="Informacion" />
     <q-tab name="features" icon="featured_play_list" label="Caracteristicas" />
     <q-tab name="price" icon="attach_money" label="Precios" />
+    <q-tab name="docs" icon="folder" label="Documentos" />
   </q-tabs>
   <q-separator></q-separator>
   <q-tab-panels
@@ -61,6 +62,16 @@
         <price-index :vehicle="currentVehicle" :key="currentVehicle" />
       </q-card>
     </q-tab-panel>
+    <q-tab-panel name="docs">
+      <q-card class="q-pa-sm">
+        <q-item dense>
+          <q-item-section>
+            <q-item-label class="text-h6"> Documentos </q-item-label>
+          </q-item-section>
+        </q-item>
+        <vehicle-doc-index :vehicle="currentVehicle" :key="currentVehicle" />
+      </q-card>
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -71,6 +82,7 @@ import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import VehicleForm from "src/components/Vehicle/VehicleForm.vue";
 import VehicleFeatureIndex from "src/components/VehicleFeature/VehicleFeatureIndex.vue";
 import PriceIndex from "src/components/Price/PriceIndex.vue";
+import VehicleDocIndex from "src/components/VehicleDoc/VehicleDocIndex.vue";
 
 const { vehicle } = defineProps(["vehicle"]);
 
