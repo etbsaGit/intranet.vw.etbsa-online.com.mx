@@ -8,7 +8,7 @@ const routes = [
       middlewares: [guest],
     },
     children: [
-      { path: "", component: () => import("pages/auth/LoginPage.vue") },
+      { path: "", component: () => import("pages/Auth/LoginPage.vue") },
     ],
   },
   {
@@ -21,11 +21,15 @@ const routes = [
       { path: "", component: () => import("pages/HomePage.vue") },
       {
         path: "/catalogos",
-        component: () => import("src/pages/catalogos/indexPage.vue"),
+        component: () => import("src/pages/Catalogos/IndexPage.vue"),
       },
       {
         path: "/vehicle",
-        component: () => import("src/pages/vehicle/VehiclePage.vue"),
+        component: () => import("src/pages/Vehicle/VehiclePage.vue"),
+      },
+      {
+        path: "/customer",
+        component: () => import("src/pages/Customer/CustomerPage.vue"),
       },
     ],
   },

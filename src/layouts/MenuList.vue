@@ -3,6 +3,20 @@
     <q-item
       clickable
       v-ripple
+      to="/customer"
+      :active="link === 'customer'"
+      @click="link = 'customer'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="group" />
+      </q-item-section>
+
+      <q-item-section>Clientes</q-item-section>
+    </q-item>
+    <q-item
+      clickable
+      v-ripple
       to="/vehicle"
       :active="link === 'vehicle'"
       @click="link = 'vehicle'"
