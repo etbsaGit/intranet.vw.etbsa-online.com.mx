@@ -75,9 +75,62 @@
             {{ props.row.type?.name }}
           </q-td>
         </template>
+        <template v-slot:body-cell-active="props">
+          <q-td>
+            <q-chip
+              v-if="props.row.featured == 0"
+              color="grey-10"
+              text-color="white"
+            >
+              No activo
+            </q-chip>
+            <q-chip
+              v-if="props.row.featured == 1"
+              color="blue"
+              text-color="white"
+            >
+              Activo
+            </q-chip>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-featured="props">
+          <q-td>
+            <q-chip
+              v-if="props.row.featured == 0"
+              color="grey-10"
+              text-color="white"
+            >
+              No destacado
+            </q-chip>
+            <q-chip
+              v-if="props.row.featured == 1"
+              color="green"
+              text-color="white"
+            >
+              Destacado
+            </q-chip>
+          </q-td>
+        </template>
         <template v-slot:body-cell-brand="props">
           <q-td>
-            {{ props.row.brand?.name }}
+            <q-item dense>
+              <q-item-section avatar>
+                <q-avatar
+                  color="primary"
+                  text-color="white"
+                  v-if="props.row.brand && props.row.brand.logopath"
+                >
+                  <img :src="props.row.brand.logopath" alt="Foto de la marca" />
+                </q-avatar>
+                <q-avatar v-else color="primary" text-color="white">
+                  {{ props.row.name.charAt(0).toUpperCase()
+                  }}{{ props.row.name.charAt(1).toUpperCase() }}
+                </q-avatar>
+              </q-item-section>
+              <q-item-section avatar>
+                {{ props.row.brand?.name }}
+              </q-item-section>
+            </q-item>
           </q-td>
         </template>
       </q-table>
@@ -291,20 +344,20 @@ const columns = [
     field: "name",
     sortable: true,
   },
-  {
-    name: "description",
-    label: "Descripcion",
-    align: "left",
-    field: "description",
-    sortable: true,
-  },
-  {
-    name: "quantity",
-    label: "Cantidad",
-    align: "left",
-    field: "quantity",
-    sortable: true,
-  },
+  // {
+  //   name: "description",
+  //   label: "Descripcion",
+  //   align: "left",
+  //   field: "description",
+  //   sortable: true,
+  // },
+  // {
+  //   name: "quantity",
+  //   label: "Cantidad",
+  //   align: "left",
+  //   field: "quantity",
+  //   sortable: true,
+  // },
   {
     name: "active",
     label: "Estado",

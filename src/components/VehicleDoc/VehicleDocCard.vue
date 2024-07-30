@@ -15,7 +15,8 @@ import { ref, computed } from "vue";
 const { doc } = defineProps(["doc"]);
 
 // Ruta de la imagen por defecto
-const defaultImage = "src/assets/noimage.jpg";
+const defaultImage =
+  "https://test-vwbajio-bucket.s3.us-west-1.amazonaws.com/noimage.jpg";
 
 // La imagen que se mostrará en la vista
 const imgSrc = ref(doc.realpath);

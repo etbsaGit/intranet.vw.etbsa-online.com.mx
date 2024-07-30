@@ -11,7 +11,7 @@
 
   <q-item class="grid-container">
     <q-item-section v-for="(doc, index) in rows" :key="index">
-      <q-card @click="openEdit(doc)">
+      <q-card @click="openEdit(doc)" class="no-shadow">
         <vehicle-doc-card :doc="doc" :key="doc" />
         <q-tooltip class="text-h6 bg-primary">
           Haz click para editar
