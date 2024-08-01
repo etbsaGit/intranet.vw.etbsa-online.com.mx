@@ -1,38 +1,36 @@
 <template>
   <q-tabs
     v-model="tab"
-    dense
-    class="text-grey"
+    class="text-black"
     active-color="primary"
     indicator-color="primary"
+    dense
     align="justify"
     narrow-indicator
   >
-    <q-tab name="info" icon="person" label="Informacion" />
-    <q-tab name="sales" icon="request_quote" label="Ventas" />
+    <q-tab name="info" icon="request_quote" label="Informacion" />
   </q-tabs>
   <q-separator />
-
-  <q-tab-panels v-model="tab" animated>
+  <q-tab-panels
+    v-model="tab"
+    animated
+    swipeable
+    vertical
+    transition-prev="jump-up"
+    transition-next="jump-up"
+  >
     <q-tab-panel name="info">
       <q-card class="q-pa-sm">
         <q-item dense>
           <q-item-section>
-            <q-item-label class="text-h6"> Informacion personal </q-item-label>
+            <q-item-label class="text-h6"> Informacion general </q-item-label>
           </q-item-section>
           <q-item-section side>
             <q-btn label="Guardar" color="blue" @click="putItem" />
           </q-item-section>
         </q-item>
-        <customer-form
-          ref="edit"
-          :customer="currentCustomer"
-          :key="currentCustomer"
-        />
+        <sale-form ref="edit" :sale="currentItem" :key="currentItem" />
       </q-card>
-    </q-tab-panel>
-    <q-tab-panel name="sales">
-      <sale-page :customer="currentCustomer" :key="currentCustomer" />
     </q-tab-panel>
   </q-tab-panels>
 </template>
@@ -41,13 +39,12 @@
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
-import CustomerForm from "src/components/Customer/CustomerForm.vue";
-import SalePage from "src/pages/Sale/SalePage.vue";
+import SaleForm from "src/components/Sale/SaleForm.vue";
 
-const { customer } = defineProps(["customer"]);
+const { sale } = defineProps(["sale"]);
 
 const tab = ref("info");
-const currentCustomer = ref(null);
+const currentItem = ref(null);
 const edit = ref(null);
 
 const putItem = async () => {
@@ -57,18 +54,18 @@ const putItem = async () => {
     return;
   }
   const final = {
-    ...edit.value.formCustomer,
+    ...edit.value.formSale,
   };
   let res = await sendRequest(
     "PUT",
     final,
-    "/api/intranet/customer/" + final.id,
+    "/api/intranet/sale/" + final.id,
     ""
   );
-  currentCustomer.value = res;
+  currentItem.value = res;
 };
 
 onMounted(() => {
-  currentCustomer.value = customer;
+  currentItem.value = sale;
 });
 </script>
