@@ -10,7 +10,7 @@ defineOptions({
 });
 </script> -->
 <template>
-  <q-page class="flex flex-center">
+  <!-- <q-page class="flex flex-center">
     <div class="fullscreen-img-container">
       <q-img
         src="~src\assets\index.jpg"
@@ -18,10 +18,29 @@ defineOptions({
         class="fullscreen-img"
       />
     </div>
-  </q-page>
+  </q-page> -->
+  <q-carousel
+    animated
+    v-model="slide"
+    navigation
+    infinite
+    :autoplay="autoplay"
+    arrows
+    transition-prev="fade"
+    transition-next="fade"
+    @mouseenter="autoplay = true"
+    @mouseleave="autoplay = true"
+    style="height: 93vh"
+  >
+    <q-carousel-slide :name="1" img-src="~src\assets\index3.jpg" />
+    <q-carousel-slide :name="2" img-src="~src\assets\index.jpg" />
+  </q-carousel>
 </template>
 
 <script setup>
+import { ref } from "vue";
+const slide = ref(1);
+const autoplay = ref(2000);
 defineOptions({
   name: "HomePage",
 });

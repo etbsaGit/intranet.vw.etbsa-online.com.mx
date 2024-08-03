@@ -86,6 +86,7 @@
           label="Telefono"
           mask="(###) ### - ####"
           unmasked-value
+          hint
         />
         <!-- :rules="[(val) => (val && val.length > 0) || 'Obligatorio']" -->
       </q-item-section>
@@ -101,7 +102,7 @@
         />
       </q-item-section>
       <q-item-section>
-        <q-input filled dense v-model="formCustomer.email" label="Email" />
+        <q-input filled dense v-model="formCustomer.email" label="Email" hint />
         <!-- :rules="[
             (val) => !!val || 'Este campo es obligatorio',
             (val) =>

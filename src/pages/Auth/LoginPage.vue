@@ -30,16 +30,13 @@
           <q-input
             dense
             outlined
-            class="q-mt-md"
             v-model="form.password"
             type="password"
             label="Password"
             :rules="[(val) => (val && val.length > 0) || 'Ingrese contraseña']"
           />
-        </q-card-section>
-        <q-card-section>
           <q-btn
-            style="border-radius: 8px"
+            style="border-radius: 5px"
             color="primary"
             rounded
             size="md"
