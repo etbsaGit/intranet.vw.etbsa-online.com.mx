@@ -9,6 +9,7 @@
     narrow-indicator
   >
     <q-tab name="info" icon="request_quote" label="Informacion" />
+    <q-tab name="dates" icon="event" label="Fechas" />
   </q-tabs>
   <q-separator />
   <q-tab-panels
@@ -32,6 +33,11 @@
         <sale-form ref="edit" :sale="currentItem" :key="currentItem" />
       </q-card>
     </q-tab-panel>
+    <q-tab-panel name="dates">
+      <q-card class="q-pa-sm">
+        <sale-date-index ref="edit" :sale="currentItem" :key="currentItem" />
+      </q-card>
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -40,6 +46,7 @@ import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
 import SaleForm from "src/components/Sale/SaleForm.vue";
+import SaleDateIndex from "src/components/SaleDate/SaleDateIndex.vue";
 
 const { sale } = defineProps(["sale"]);
 

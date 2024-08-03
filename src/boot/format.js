@@ -1,3 +1,5 @@
+import { date } from "quasar";
+
 export function formatPhoneNumber(phoneNumber) {
   // Eliminar cualquier carácter que no sea un dígito
   const cleaned = ("" + phoneNumber).replace(/\D/g, "");
@@ -11,4 +13,10 @@ export function formatPhoneNumber(phoneNumber) {
 
   // Si no coincide con el patrón esperado, devolver el número sin formato
   return cleaned;
+}
+
+export function formatDate(currentDay) {
+  if (!currentDay) return "Pendiente";
+  const nextDay = date.addToDate(currentDay, { days: 1 });
+  return date.formatDate(nextDay, "D/MM/YYYY");
 }
