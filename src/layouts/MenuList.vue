@@ -70,6 +70,20 @@
 
       <q-item-section>Catalogos</q-item-section>
     </q-item>
+    <q-item
+      clickable
+      v-ripple
+      to="/admin"
+      :active="link === 'admin'"
+      @click="link = 'admin'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="admin_panel_settings" />
+      </q-item-section>
+
+      <q-item-section>Administracion</q-item-section>
+    </q-item>
   </q-list>
 </template>
 
