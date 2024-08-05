@@ -22,6 +22,10 @@ const routes = [
         path: "",
         component: () => import("src/pages/Admin/AdminPage.vue"),
       },
+      {
+        path: "/catalogos",
+        component: () => import("src/pages/Catalogos/IndexPage.vue"),
+      },
     ],
   },
   {
@@ -32,10 +36,6 @@ const routes = [
     },
     children: [
       { path: "", component: () => import("pages/HomePage.vue") },
-      {
-        path: "/catalogos",
-        component: () => import("src/pages/Catalogos/IndexPage.vue"),
-      },
       {
         path: "/vehicle",
         component: () => import("src/pages/Vehicle/VehiclePage.vue"),

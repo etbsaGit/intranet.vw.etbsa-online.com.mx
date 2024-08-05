@@ -57,6 +57,7 @@
       <q-item-section>Empleados</q-item-section>
     </q-item>
     <q-item
+      v-if="checkRole('Admin')"
       clickable
       v-ripple
       to="/catalogos"
