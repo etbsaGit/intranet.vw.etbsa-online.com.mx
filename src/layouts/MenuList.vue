@@ -71,6 +71,7 @@
       <q-item-section>Catalogos</q-item-section>
     </q-item>
     <q-item
+      v-if="checkRole('Admin')"
       clickable
       v-ripple
       to="/admin"
@@ -89,6 +90,8 @@
 
 <script setup>
 import { ref } from "vue";
+
+import { checkRole } from "src/boot/checks";
 
 const link = ref("inbox");
 </script>
