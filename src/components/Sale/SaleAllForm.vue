@@ -1,7 +1,7 @@
 <template>
   <q-tabs
     v-model="tab"
-    class="text-black"
+    class="text-grey"
     active-color="primary"
     indicator-color="primary"
     dense

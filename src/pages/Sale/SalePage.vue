@@ -60,17 +60,10 @@
           <q-space />
         </template>
         <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td>
-              <q-btn
-                size="sm"
-                color="primary"
-                round
-                dense
-                @click="toggleExpand(props.row)"
-                :icon="props.row._expand ? 'remove' : 'add'"
-              />
-            </q-td>
+          <q-tr :props="props" @click="toggleExpand(props.row)">
+            <q-tooltip class="text-h6 bg-primary">
+              Haz click para ver detalle
+            </q-tooltip>
             <q-td key="editar" :props="props">
               <q-btn
                 dense
@@ -99,7 +92,7 @@
             </q-td>
           </q-tr>
           <q-tr v-show="props.row._expand" :props="props">
-            <q-td colspan="100%" class="bg-blue-grey-12">
+            <q-td colspan="100%" class="bg-secondary">
               <q-item class="text-center">
                 <q-item-section>
                   <div><strong>Serie del vehiculo:</strong></div>

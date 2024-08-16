@@ -95,6 +95,8 @@
           label="Activo"
           v-model="formVehicle.active"
           color="primary"
+          :false-value="0"
+          :true-value="1"
         />
       </q-item-section>
       <q-item-section>
@@ -103,6 +105,8 @@
           label="Destacado"
           v-model="formVehicle.featured"
           color="primary"
+          :false-value="0"
+          :true-value="1"
         />
       </q-item-section>
     </q-item>

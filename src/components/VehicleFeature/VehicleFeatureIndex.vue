@@ -20,7 +20,7 @@
           default-opened
           class="shadow-1 overflow-hidden"
           header-class="bg-secondary text-white"
-          style="border-radius: 10px"
+          style="border-radius: 10px; border-color: black"
         >
           <q-item align="center">
             <q-item-section avatar>

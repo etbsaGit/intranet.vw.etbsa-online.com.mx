@@ -54,6 +54,7 @@
         icon="perm_identity"
         :label="user.name"
         caption="Opciones de usuario"
+        class="text-primary"
       >
         <q-card>
           <q-card-section>
@@ -69,7 +70,7 @@
               <q-btn
                 label="Cambiar password"
                 size="xs"
-                color="info"
+                color="secondary"
                 @click="openPassword"
               />
             </q-item-section>

@@ -181,6 +181,7 @@
           label="Codigo postal"
           lazy-rules
           mask="#####"
+          hint
         />
         <!-- :rules="[(val) => val !== null || 'Obligatorio']" -->
       </q-item-section>

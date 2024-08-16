@@ -78,14 +78,14 @@
         <template v-slot:body-cell-active="props">
           <q-td>
             <q-chip
-              v-if="props.row.featured == 0"
+              v-if="props.row.active == 0"
               color="grey-10"
               text-color="white"
             >
               No activo
             </q-chip>
             <q-chip
-              v-if="props.row.featured == 1"
+              v-if="props.row.active == 1"
               color="blue"
               text-color="white"
             >

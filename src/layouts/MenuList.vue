@@ -114,6 +114,6 @@ const openNewTab = () => {
 
 <style lang="sass">
 .my-menu-link
-  color: black
-  background: gray
+  color: white
+  background: #2b6ad0
 </style>
