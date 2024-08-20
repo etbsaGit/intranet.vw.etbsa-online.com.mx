@@ -9,6 +9,7 @@
     narrow-indicator
   >
     <q-tab name="info" icon="face" label="Informacion" />
+    <q-tab name="municipality" icon="public" label="Zonas asignadas" />
   </q-tabs>
   <q-separator />
   <q-tab-panels
@@ -32,6 +33,19 @@
         <employee-form ref="edit" :employee="currentItem" :key="currentItem" />
       </q-card>
     </q-tab-panel>
+    <q-tab-panel name="municipality">
+      <q-card class="q-pa-sm">
+        <q-item dense>
+          <q-item-section>
+            <q-item-label class="text-h6"> Zonas asignadas </q-item-label>
+          </q-item-section>
+        </q-item>
+        <employee-municipality-index
+          :employee="currentItem"
+          :key="currentItem"
+        />
+      </q-card>
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -40,6 +54,7 @@ import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
 import EmployeeForm from "src/components/Employee/EmployeeForm.vue";
+import EmployeeMunicipalityIndex from "src/components/EmployeeMunicipality/EmployeeMunicipalityIndex.vue";
 
 const { employee } = defineProps(["employee"]);
 

@@ -72,12 +72,51 @@
         </template>
         <template v-slot:body-cell-name="props">
           <q-td>
-            {{ props.row.fullName }}
+            <q-item dense>
+              <q-item-section avatar>
+                <q-avatar
+                  color="white"
+                  text-color="white"
+                  v-if="props.row.pic && props.row.picture"
+                >
+                  <img :src="props.row.pic" alt="Foto de la marca" />
+                </q-avatar>
+                <q-avatar v-else color="primary" text-color="white">
+                  {{ props.row.first_name.charAt(0).toUpperCase()
+                  }}{{ props.row.paternal_surname.charAt(0).toUpperCase() }}
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>
+                  {{ props.row.fullName }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
           </q-td>
         </template>
         <template v-slot:body-cell-agency="props">
           <q-td>
             {{ props.row.agency?.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-position="props">
+          <q-td>
+            {{ props.row.position?.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-type="props">
+          <q-td>
+            {{ props.row.type?.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-email="props">
+          <q-td>
+            {{ props.row.user?.email }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-phone="props">
+          <q-td>
+            {{ formatPhoneNumber(props.row.phone) }}
           </q-td>
         </template>
       </q-table>
@@ -89,8 +128,9 @@
     transition-show="slide-up"
     transition-hide="slide-down"
     persistent
+    full-width
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Agregar</q-item-label>
@@ -146,7 +186,7 @@
           <q-input
             outlined
             dense
-            label="Buscar por nombres, apellidos o RFC"
+            label="Buscar por nombres, apellidos, clave, telefono o RFC"
             v-model="filterForm.search"
             @update:model-value="onInputChange"
           >
@@ -155,11 +195,47 @@
             </template>
           </q-input>
         </q-item-section>
+      </q-item>
+      <q-item>
         <q-item-section>
           <q-select
             v-model="filterForm.agency_id"
             :options="agencies"
             label="Agencia"
+            option-value="id"
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            clearable
+            outlined
+            dense
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.type_id"
+            :options="types"
+            label="Tipo"
+            option-value="id"
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            clearable
+            outlined
+            dense
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.position_id"
+            :options="positions"
+            label="Puesto"
             option-value="id"
             option-label="name"
             option-disable="inactive"
@@ -207,6 +283,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { formatPhoneNumber } from "src/boot/format.js";
 
 import EmployeeForm from "src/components/Employee/EmployeeForm.vue";
 import EmployeeAllForm from "src/components/Employee/EmployeeAllForm.vue";
@@ -227,9 +304,13 @@ const current_page = ref(1);
 const filterForm = ref({
   search: null,
   agency_id: null,
+  type_id: null,
+  position_id: null,
 });
 
 const agencies = ref([]);
+const positions = ref([]);
+const types = ref([]);
 
 const columns = [
   {
@@ -246,10 +327,17 @@ const columns = [
     sortable: true,
   },
   {
-    name: "rfc",
-    label: "RFC",
+    name: "phone",
+    label: "Telefono",
     align: "left",
-    field: "rfc",
+    field: "phone",
+    sortable: true,
+  },
+  {
+    name: "email",
+    label: "Email",
+    align: "left",
+    field: "email",
     sortable: true,
   },
   {
@@ -257,6 +345,20 @@ const columns = [
     label: "Agencia",
     align: "left",
     field: "agency",
+    sortable: true,
+  },
+  {
+    name: "position",
+    label: "Puesto",
+    align: "left",
+    field: "position",
+    sortable: true,
+  },
+  {
+    name: "type",
+    label: "Tipo",
+    align: "left",
+    field: "type",
     sortable: true,
   },
 ];
@@ -281,6 +383,8 @@ const getOptions = async () => {
     ""
   );
   agencies.value = res.agencies;
+  positions.value = res.positions;
+  types.value = res.types;
 };
 
 const getRows = async (page = 1) => {
