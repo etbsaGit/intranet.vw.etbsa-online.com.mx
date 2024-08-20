@@ -20,27 +20,25 @@
         dense
         :rows-per-page-options="[0]"
       >
-        <template v-slot:body-cell-name="props">
+        <template v-slot:body-cell-edit="props">
           <q-td>
-            <q-item dense>
-              <q-item-section avatar>
-                <q-btn
-                  dense
-                  color="primary"
-                  flat
-                  icon="edit_square"
-                  @click="openEdit(props.row)"
-                />
-              </q-item-section>
-              <q-item-section avatar>
-                <q-item-label>
-                  {{ props.row.name }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ props.row.address }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
+            <q-btn
+              dense
+              color="primary"
+              flat
+              icon="edit_square"
+              @click="openEdit(props.row)"
+            />
+          </q-td>
+        </template>
+        <template v-slot:body-cell-municipality="props">
+          <q-td>
+            {{ props.row.municipality.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-state="props">
+          <q-td>
+            {{ props.row.state.name }}
           </q-td>
         </template>
       </q-table>
@@ -120,9 +118,40 @@ const edit = ref(null);
 
 const columns = [
   {
+    name: "edit",
+    align: "left",
+    field: "edit",
+    label: "Editar",
+  },
+  {
     name: "name",
     align: "left",
     field: "name",
+    label: "Nombre",
+  },
+  {
+    name: "address",
+    align: "left",
+    field: "address",
+    label: "Calle y numero",
+  },
+  {
+    name: "district",
+    align: "left",
+    field: "district",
+    label: "Colonia",
+  },
+  {
+    name: "municipality",
+    align: "left",
+    field: "municipality",
+    label: "Municipio",
+  },
+  {
+    name: "state",
+    align: "left",
+    field: "state",
+    label: "Estado",
   },
 ];
 

@@ -83,7 +83,7 @@
           filled
           dense
           v-model="formCustomer.phone"
-          label="Telefono"
+          label="Telefono movil"
           mask="(###) ### - ####"
           unmasked-value
           hint
