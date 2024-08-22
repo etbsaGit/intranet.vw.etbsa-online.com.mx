@@ -20,3 +20,10 @@ export function formatDate(currentDay) {
   const nextDay = date.addToDate(currentDay, { days: 1 });
   return date.formatDate(nextDay, "D/MM/YYYY");
 }
+
+export function formatCurrency(value) {
+  return new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  }).format(value);
+}

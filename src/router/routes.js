@@ -52,6 +52,10 @@ const routes = [
         path: "/sale",
         component: () => import("src/pages/Sale/SalePage.vue"),
       },
+      {
+        path: "/target",
+        component: () => import("src/pages/Target/TargetPage.vue"),
+      },
     ],
   },
 

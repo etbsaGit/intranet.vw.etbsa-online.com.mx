@@ -67,6 +67,21 @@
       v-if="checkRole('Admin')"
       clickable
       v-ripple
+      to="/target"
+      :active="link === 'tarjet'"
+      @click="link = 'tarjet'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="flag" />
+      </q-item-section>
+
+      <q-item-section>Metas</q-item-section>
+    </q-item>
+    <q-item
+      v-if="checkRole('Admin')"
+      clickable
+      v-ripple
       to="/catalogos"
       :active="link === 'catalogos'"
       @click="link = 'catalogos'"

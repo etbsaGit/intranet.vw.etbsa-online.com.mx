@@ -10,6 +10,7 @@
   >
     <q-tab name="info" icon="face" label="Informacion" />
     <q-tab name="municipality" icon="public" label="Zonas asignadas" />
+    <q-tab name="targets" icon="flag" label="Metas" />
   </q-tabs>
   <q-separator />
   <q-tab-panels
@@ -46,6 +47,16 @@
         />
       </q-card>
     </q-tab-panel>
+    <q-tab-panel name="targets">
+      <q-card class="q-pa-sm">
+        <q-item dense>
+          <q-item-section>
+            <q-item-label class="text-h6"> Metas asignadas </q-item-label>
+          </q-item-section>
+        </q-item>
+        <target-index :employee="currentItem" :key="currentItem" />
+      </q-card>
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -55,6 +66,7 @@ import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
 import EmployeeForm from "src/components/Employee/EmployeeForm.vue";
 import EmployeeMunicipalityIndex from "src/components/EmployeeMunicipality/EmployeeMunicipalityIndex.vue";
+import TargetIndex from "src/components/Target/TargetIndex.vue";
 
 const { employee } = defineProps(["employee"]);
 
