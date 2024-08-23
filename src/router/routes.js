@@ -1,4 +1,4 @@
-import { guest, auth, admin } from "./middleware";
+import { guest, auth, admin, gerente } from "./middleware";
 
 const routes = [
   {
@@ -44,6 +44,19 @@ const routes = [
         path: "/customer",
         component: () => import("src/pages/Customer/CustomerPage.vue"),
       },
+    ],
+  },
+  {
+    path: "/",
+    component: () => import("layouts/MainLayout.vue"),
+    meta: {
+      middlewares: [gerente],
+    },
+    children: [
+      {
+        path: "/target",
+        component: () => import("src/pages/Target/TargetPage.vue"),
+      },
       {
         path: "/employee",
         component: () => import("src/pages/Employee/EmployeePage.vue"),
@@ -51,10 +64,6 @@ const routes = [
       {
         path: "/sale",
         component: () => import("src/pages/Sale/SalePage.vue"),
-      },
-      {
-        path: "/target",
-        component: () => import("src/pages/Target/TargetPage.vue"),
       },
     ],
   },
