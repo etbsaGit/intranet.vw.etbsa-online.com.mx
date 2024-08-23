@@ -13,7 +13,8 @@
           clearable
           color="secondary"
           dense
-          outlined
+          filled
+          :readonly="!checkPosition('Gerente')"
           v-model="formEmployee.file"
           label="Subir foto"
           lazy-rules
@@ -28,6 +29,7 @@
             <q-input
               v-model="formEmployee.first_name"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Primer nombre"
               lazy-rules
@@ -38,6 +40,7 @@
             <q-input
               v-model="formEmployee.middle_name"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Segundo nombre"
               lazy-rules
@@ -48,6 +51,7 @@
             <q-input
               v-model="formEmployee.paternal_surname"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Apellido paterno"
               lazy-rules
@@ -58,6 +62,7 @@
             <q-input
               v-model="formEmployee.maternal_surname"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Apellido materno"
               lazy-rules
@@ -69,6 +74,7 @@
           <q-item-section>
             <q-input
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               v-model="formEmployee.phone"
               label="Telefono"
@@ -80,6 +86,7 @@
           <q-item-section>
             <q-input
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               v-model="formEmployee.email"
               label="Email"
@@ -96,6 +103,7 @@
             <q-input
               v-model="formEmployee.rfc"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="RFC"
               lazy-rules
@@ -114,6 +122,7 @@
             <q-input
               v-model="formEmployee.sales_key"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Clave de vendedor"
               lazy-rules
@@ -133,6 +142,7 @@
               transition-show="jump-up"
               transition-hide="jump-up"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               clearable
               :rules="[(val) => val !== null || 'Obligatorio']"
@@ -151,6 +161,26 @@
               transition-show="jump-up"
               transition-hide="jump-up"
               filled
+              :readonly="!checkPosition('Gerente')"
+              dense
+              clearable
+              :rules="[(val) => val !== null || 'Obligatorio']"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-select
+              v-model="formEmployee.department_id"
+              :options="departments"
+              label="Departamento"
+              option-value="id"
+              option-label="name"
+              option-disable="inactive"
+              emit-value
+              map-options
+              transition-show="jump-up"
+              transition-hide="jump-up"
+              filled
+              :readonly="!checkPosition('Gerente')"
               dense
               clearable
               :rules="[(val) => val !== null || 'Obligatorio']"
@@ -169,6 +199,7 @@
               transition-show="jump-up"
               transition-hide="jump-up"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               clearable
               :rules="[(val) => val !== null || 'Obligatorio']"
@@ -183,6 +214,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 const { employee } = defineProps(["employee"]);
 
@@ -191,6 +223,7 @@ const path = employee ? employee.pic : null;
 const agencies = ref([]);
 const types = ref([]);
 const positions = ref([]);
+const departments = ref([]);
 
 const myForm = ref(null);
 
@@ -206,6 +239,7 @@ const formEmployee = ref({
   agency_id: employee ? employee.agency_id : null,
   type_id: employee ? employee.type_id : null,
   position_id: employee ? employee.position_id : null,
+  department_id: employee ? employee.department_id : null,
   email: employee?.user?.email ?? null,
   base64: null,
   file: [],
@@ -235,6 +269,7 @@ const getOptions = async () => {
   agencies.value = res.agencies;
   types.value = res.types;
   positions.value = res.positions;
+  departments.value = res.departments;
 };
 
 const validate = async () => {

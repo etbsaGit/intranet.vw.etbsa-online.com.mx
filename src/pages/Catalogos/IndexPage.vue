@@ -13,6 +13,7 @@
     <q-tab name="features" label="Caracteristicas" />
     <q-tab name="agencies" label="Agencias" />
     <q-tab name="positions" label="Puestos" />
+    <q-tab name="department" label="Departamentos" />
   </q-tabs>
   <q-separator />
   <q-tab-panels v-model="tab" animated keep-alive>
@@ -34,6 +35,9 @@
     <q-tab-panel name="positions" class="q-pa-none">
       <position-page />
     </q-tab-panel>
+    <q-tab-panel name="department" class="q-pa-none">
+      <department-page />
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -45,6 +49,7 @@ import FeaturePage from "src/pages/Catalogos/FeaturePage.vue";
 import StatusPage from "src/pages/Catalogos/StatusPage.vue";
 import AgencyPage from "src/pages/Catalogos/AgencyPage.vue";
 import PositionPage from "src/pages/Catalogos/PositionPage.vue";
+import DepartmentPage from "src/pages/Catalogos/DepartmentPage.vue";
 
 const tab = ref("types");
 </script>

@@ -119,6 +119,11 @@
             {{ formatPhoneNumber(props.row.phone) }}
           </q-td>
         </template>
+        <template v-slot:body-cell-department="props">
+          <q-td>
+            {{ props.row.department?.name }}
+          </q-td>
+        </template>
       </q-table>
     </q-item-section>
   </q-item>
@@ -345,6 +350,13 @@ const columns = [
     label: "Agencia",
     align: "left",
     field: "agency",
+    sortable: true,
+  },
+  {
+    name: "department",
+    label: "Departamento",
+    align: "left",
+    field: "department",
     sortable: true,
   },
   {

@@ -1,6 +1,26 @@
 <template>
   <q-list bordered padding class="rounded-borders text-primary">
-    <q-item clickable v-ripple @click="openNewTab" active-class="my-menu-link">
+    <q-item
+      clickable
+      v-ripple
+      to="/profile"
+      :active="link === 'profile'"
+      @click="link = 'profile'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="account_circle" />
+      </q-item-section>
+
+      <q-item-section>Perfil</q-item-section>
+    </q-item>
+    <q-item
+      clickable
+      v-ripple
+      @click="openNewTab"
+      active-class="my-menu-link"
+      v-if="checkPosition('Gerente')"
+    >
       <q-item-section avatar>
         <q-icon name="shopping_bag" />
       </q-item-section>
@@ -50,6 +70,7 @@
       <q-item-section>Vehiculos</q-item-section>
     </q-item>
     <q-item
+      v-if="checkPosition('Gerente')"
       clickable
       v-ripple
       to="/employee"
@@ -62,6 +83,21 @@
       </q-item-section>
 
       <q-item-section>Empleados</q-item-section>
+    </q-item>
+    <q-item
+      v-if="checkPosition('Gerente')"
+      clickable
+      v-ripple
+      to="/target"
+      :active="link === 'tarjet'"
+      @click="link = 'tarjet'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="flag" />
+      </q-item-section>
+
+      <q-item-section>Metas</q-item-section>
     </q-item>
     <q-item
       v-if="checkRole('Admin')"
@@ -99,7 +135,7 @@
 <script setup>
 import { ref } from "vue";
 
-import { checkRole } from "src/boot/checks";
+import { checkRole, checkPosition } from "src/boot/checks";
 
 const link = ref("inbox");
 
