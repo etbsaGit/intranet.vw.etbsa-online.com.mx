@@ -12,6 +12,6 @@ export function checkPosition(position) {
   const isAdmin = usuario.roles.some(
     (usuarioRol) => usuarioRol.name === "Admin"
   );
-  const hasPosition = usuario.employee.position.name === position;
+  const hasPosition = usuario.employee?.position.name === position;
   return isAdmin || hasPosition;
 }
