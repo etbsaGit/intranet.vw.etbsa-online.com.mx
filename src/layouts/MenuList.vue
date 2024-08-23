@@ -3,6 +3,20 @@
     <q-item
       clickable
       v-ripple
+      to="/profile"
+      :active="link === 'profile'"
+      @click="link = 'profile'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="account_circle" />
+      </q-item-section>
+
+      <q-item-section>Perfil</q-item-section>
+    </q-item>
+    <q-item
+      clickable
+      v-ripple
       @click="openNewTab"
       active-class="my-menu-link"
       v-if="checkPosition('Gerente')"

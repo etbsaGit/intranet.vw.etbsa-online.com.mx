@@ -1,5 +1,5 @@
 <template>
-  <q-item>
+  <q-item v-if="checkPosition('Gerente')">
     <q-btn
       dense
       label="Agregar o quitar zonas"
@@ -53,6 +53,7 @@ import { sendRequest } from "src/boot/functions";
 
 import EmployeeMunicipalityForm from "src/components/EmployeeMunicipality/EmployeeMunicipalityForm.vue";
 import EmployeeMunicipalityMaps from "src/components/EmployeeMunicipality/EmployeeMunicipalityMaps.vue";
+import { checkPosition } from "src/boot/checks";
 
 const { employee } = defineProps(["employee"]);
 

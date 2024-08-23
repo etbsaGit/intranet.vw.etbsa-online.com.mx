@@ -13,7 +13,8 @@
           clearable
           color="secondary"
           dense
-          outlined
+          filled
+          :readonly="!checkPosition('Gerente')"
           v-model="formEmployee.file"
           label="Subir foto"
           lazy-rules
@@ -28,6 +29,7 @@
             <q-input
               v-model="formEmployee.first_name"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Primer nombre"
               lazy-rules
@@ -38,6 +40,7 @@
             <q-input
               v-model="formEmployee.middle_name"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Segundo nombre"
               lazy-rules
@@ -48,6 +51,7 @@
             <q-input
               v-model="formEmployee.paternal_surname"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Apellido paterno"
               lazy-rules
@@ -58,6 +62,7 @@
             <q-input
               v-model="formEmployee.maternal_surname"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Apellido materno"
               lazy-rules
@@ -69,6 +74,7 @@
           <q-item-section>
             <q-input
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               v-model="formEmployee.phone"
               label="Telefono"
@@ -80,6 +86,7 @@
           <q-item-section>
             <q-input
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               v-model="formEmployee.email"
               label="Email"
@@ -96,6 +103,7 @@
             <q-input
               v-model="formEmployee.rfc"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="RFC"
               lazy-rules
@@ -114,6 +122,7 @@
             <q-input
               v-model="formEmployee.sales_key"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               label="Clave de vendedor"
               lazy-rules
@@ -133,6 +142,7 @@
               transition-show="jump-up"
               transition-hide="jump-up"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               clearable
               :rules="[(val) => val !== null || 'Obligatorio']"
@@ -151,6 +161,7 @@
               transition-show="jump-up"
               transition-hide="jump-up"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               clearable
               :rules="[(val) => val !== null || 'Obligatorio']"
@@ -169,6 +180,7 @@
               transition-show="jump-up"
               transition-hide="jump-up"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               clearable
               :rules="[(val) => val !== null || 'Obligatorio']"
@@ -187,6 +199,7 @@
               transition-show="jump-up"
               transition-hide="jump-up"
               filled
+              :readonly="!checkPosition('Gerente')"
               dense
               clearable
               :rules="[(val) => val !== null || 'Obligatorio']"
@@ -201,6 +214,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 const { employee } = defineProps(["employee"]);
 
