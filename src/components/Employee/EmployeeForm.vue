@@ -158,6 +158,24 @@
           </q-item-section>
           <q-item-section>
             <q-select
+              v-model="formEmployee.department_id"
+              :options="departments"
+              label="Departamento"
+              option-value="id"
+              option-label="name"
+              option-disable="inactive"
+              emit-value
+              map-options
+              transition-show="jump-up"
+              transition-hide="jump-up"
+              filled
+              dense
+              clearable
+              :rules="[(val) => val !== null || 'Obligatorio']"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-select
               v-model="formEmployee.type_id"
               :options="types"
               label="Tipo"
@@ -191,6 +209,7 @@ const path = employee ? employee.pic : null;
 const agencies = ref([]);
 const types = ref([]);
 const positions = ref([]);
+const departments = ref([]);
 
 const myForm = ref(null);
 
@@ -206,6 +225,7 @@ const formEmployee = ref({
   agency_id: employee ? employee.agency_id : null,
   type_id: employee ? employee.type_id : null,
   position_id: employee ? employee.position_id : null,
+  department_id: employee ? employee.department_id : null,
   email: employee?.user?.email ?? null,
   base64: null,
   file: [],
@@ -235,6 +255,7 @@ const getOptions = async () => {
   agencies.value = res.agencies;
   types.value = res.types;
   positions.value = res.positions;
+  departments.value = res.departments;
 };
 
 const validate = async () => {
