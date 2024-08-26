@@ -4,7 +4,7 @@
       <q-table
         flat
         bordered
-        title="Vehiculos"
+        title="Inventario"
         :rows="rows"
         :columns="columns"
         row-key="id"
@@ -17,7 +17,7 @@
               <q-btn
                 dense
                 outline
-                label="Agregar vehiculo al catalogo"
+                label="Agregar vehiculo al inventario"
                 color="primary"
                 @click="showAdd = true"
                 icon="add_circle"
@@ -65,68 +65,42 @@
             />
           </q-td>
         </template>
+        <template v-slot:body-cell-vehicle="props">
+          <q-td :props="props">
+            {{ props.row.vehicle.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            {{ props.row.status.name }}
+          </q-td>
+        </template>
         <template v-slot:body-cell-type="props">
-          <q-td>
-            {{ props.row.type?.name }}
+          <q-td :props="props">
+            {{ props.row.type.name }}
           </q-td>
         </template>
-        <template v-slot:body-cell-active="props">
-          <q-td>
-            <q-chip
-              v-if="props.row.active == 0"
-              color="grey-10"
-              text-color="white"
-            >
-              No activo
-            </q-chip>
-            <q-chip
-              v-if="props.row.active == 1"
-              color="blue"
-              text-color="white"
-            >
-              Activo
-            </q-chip>
+        <template v-slot:body-cell-agency="props">
+          <q-td :props="props">
+            {{ props.row.agency.name }}
           </q-td>
         </template>
-        <template v-slot:body-cell-featured="props">
-          <q-td>
-            <q-chip
-              v-if="props.row.featured == 0"
-              color="grey-10"
-              text-color="white"
-            >
-              No destacado
-            </q-chip>
-            <q-chip
-              v-if="props.row.featured == 1"
-              color="green"
-              text-color="white"
-            >
-              Destacado
-            </q-chip>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-brand="props">
-          <q-td>
-            <q-item dense>
-              <q-item-section avatar>
-                <q-avatar
-                  color="primary"
-                  text-color="white"
-                  v-if="props.row.brand && props.row.brand.logopath"
-                >
-                  <img :src="props.row.brand.logopath" alt="Foto de la marca" />
-                </q-avatar>
-                <q-avatar v-else color="primary" text-color="white">
-                  {{ props.row.name.charAt(0).toUpperCase()
-                  }}{{ props.row.name.charAt(1).toUpperCase() }}
-                </q-avatar>
-              </q-item-section>
-              <q-item-section avatar>
-                {{ props.row.brand?.name }}
+        <template v-slot:body-cell-vehicle_body="props">
+          <q-td :props="props">
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  {{ props.row.vehicle_body?.configuration }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ props.row.vehicle_body?.type.name }}
+                </q-item-label>
               </q-item-section>
             </q-item>
           </q-td>
+        </template>
+        <template v-slot:body-cell-invoice_date="props">
+          <q-td :props="props"> {{ props.row.days_in_inventory }} dias </q-td>
         </template>
       </q-table>
     </q-item-section>
@@ -137,8 +111,9 @@
     transition-show="slide-up"
     transition-hide="slide-down"
     persistent
+    full-width
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Agregar</q-item-label>
@@ -153,14 +128,14 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <vehicle-form ref="add" />
+          <inventory-form ref="add" />
         </q-item-section>
       </q-item>
     </q-card>
   </q-dialog>
 
   <q-dialog v-model="showFilters" position="top" full-width>
-    <q-card style="width: 900px">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Filtros</q-item-label>
@@ -194,7 +169,7 @@
           <q-input
             outlined
             dense
-            label="Buscar por nombre, sku o descripcion"
+            label="Buscar por # de serie, # economico, # inventario o factura"
             v-model="filterForm.search"
             @update:model-value="onInputChange"
           >
@@ -206,23 +181,58 @@
       </q-item>
       <q-item>
         <q-item-section>
-          <q-toggle
-            toggle-indeterminate
-            v-model="filterForm.active"
-            label="Activo"
-            color="primary"
+          <q-select
+            v-model="filterForm.vehicle_id"
+            :options="vehicles"
+            label="Modelo"
+            option-value="id"
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
           />
         </q-item-section>
         <q-item-section>
-          <q-toggle
-            toggle-indeterminate
-            v-model="filterForm.featured"
-            label="Destacado"
-            color="primary"
+          <q-select
+            v-model="filterForm.vehicle_body_id"
+            :options="vehicleBodies"
+            label="Carroceria"
+            option-value="id"
+            option-label="configuration"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
           />
         </q-item-section>
       </q-item>
       <q-item>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.status_id"
+            :options="statuses"
+            label="Estatus"
+            option-value="id"
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+          />
+        </q-item-section>
         <q-item-section>
           <q-select
             v-model="filterForm.type_id"
@@ -235,16 +245,16 @@
             map-options
             transition-show="jump-up"
             transition-hide="jump-up"
-            clearable
             outlined
             dense
+            clearable
           />
         </q-item-section>
         <q-item-section>
           <q-select
-            v-model="filterForm.brand_id"
-            :options="brands"
-            label="Marca"
+            v-model="filterForm.agency_id"
+            :options="agencies"
+            label="Agencia"
             option-value="id"
             option-label="name"
             option-disable="inactive"
@@ -271,7 +281,9 @@
     <q-card style="width: 100%">
       <q-item class="text-white bg-primary">
         <q-item-section>
-          <q-item-label class="text-h6">{{ selectedItem.name }}</q-item-label>
+          <q-item-label class="text-h6">{{
+            selectedItem.serial_number
+          }}</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-btn label="Cerrar" color="red" v-close-popup @click="getRows" />
@@ -280,7 +292,7 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <vehicle-all-form ref="edit" :vehicle="selectedItem" />
+          <inventory-all-form ref="edit" :inventory="selectedItem" />
         </q-item-section>
       </q-item>
     </q-card>
@@ -291,8 +303,8 @@
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
-import VehicleForm from "src/components/Vehicle/VehicleForm.vue";
-import VehicleAllForm from "src/components/Vehicle/VehicleAllForm.vue";
+import InventoryForm from "src/components/Inventory/InventoryForm.vue";
+import InventoryAllForm from "src/components/Inventory/InventoryAllForm.vue";
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -309,14 +321,18 @@ const current_page = ref(1);
 
 const filterForm = ref({
   search: null,
+  status_id: null,
   type_id: null,
-  brand_id: null,
-  active: null,
-  featured: null,
+  agency_id: null,
+  vehicle_id: null,
+  vehicle_body_id: null,
 });
 
+const statuses = ref([]);
 const types = ref([]);
-const brands = ref([]);
+const agencies = ref([]);
+const vehicles = ref([]);
+const vehicleBodies = ref([]);
 
 const columns = [
   {
@@ -326,45 +342,66 @@ const columns = [
     label: "detalle",
   },
   {
-    name: "sku",
-    label: "# unico",
+    name: "vehicle",
+    label: "Modelo",
     align: "left",
-    field: "sku",
+    field: "vehicle",
     sortable: true,
   },
   {
-    name: "name",
-    label: "Nombre",
+    name: "serial_number",
+    label: "Numero de serie",
     align: "left",
-    field: "name",
+    field: "serial_number",
+    sortable: true,
+  },
+  {
+    name: "m_y",
+    label: "m_y",
+    align: "left",
+    field: "m_y",
     sortable: true,
   },
   // {
-  //   name: "description",
-  //   label: "Descripcion",
+  //   name: "economical_number",
+  //   label: "Numero economico",
   //   align: "left",
-  //   field: "description",
+  //   field: "economical_number",
   //   sortable: true,
   // },
   // {
-  //   name: "quantity",
-  //   label: "Cantidad",
+  //   name: "inventory_number",
+  //   label: "Numero de inventario",
   //   align: "left",
-  //   field: "quantity",
+  //   field: "inventory_number",
+  //   sortable: true,
+  // },
+  // {
+  //   name: "invoice",
+  //   label: "Factura",
+  //   align: "left",
+  //   field: "invoice",
   //   sortable: true,
   // },
   {
-    name: "active",
-    label: "Estado",
+    name: "invoice_date",
+    label: "Antigüedad",
     align: "left",
-    field: "active",
+    field: "invoice_date",
     sortable: true,
   },
   {
-    name: "featured",
-    label: "Destacado",
+    name: "year",
+    label: "Año",
     align: "left",
-    field: "featured",
+    field: "year",
+    sortable: true,
+  },
+  {
+    name: "status",
+    label: "Estatus",
+    align: "left",
+    field: "status",
     sortable: true,
   },
   {
@@ -375,10 +412,17 @@ const columns = [
     sortable: true,
   },
   {
-    name: "brand",
-    label: "Marca",
+    name: "agency",
+    label: "Agencia",
     align: "left",
-    field: "brand",
+    field: "agency",
+    sortable: true,
+  },
+  {
+    name: "vehicle_body",
+    label: "Carroceria",
+    align: "left",
+    field: "vehicle_body",
     sortable: true,
   },
 ];
@@ -390,18 +434,27 @@ const openEdit = (item) => {
 
 const clearFilters = () => {
   filterForm.value.search = null;
+  filterForm.value.status_id = null;
   filterForm.value.type_id = null;
-  filterForm.value.brand_id = null;
-  filterForm.value.active = null;
-  filterForm.value.featured = null;
+  filterForm.value.agency_id = null;
+  filterForm.value.vehicle_id = null;
+  filterForm.value.vehicle_body_id = null;
   current_page.value = 1;
   getRows();
 };
 
 const getOptions = async () => {
-  let res = await sendRequest("GET", null, "/api/intranet/vehicle/options", "");
+  let res = await sendRequest(
+    "GET",
+    null,
+    "/api/intranet/inventories/options",
+    ""
+  );
+  statuses.value = res.statuses;
   types.value = res.types;
-  brands.value = res.brands;
+  agencies.value = res.agencies;
+  vehicles.value = res.vehicles;
+  vehicleBodies.value = res.vehicleBodies;
 };
 
 const getRows = async (page = 1) => {
@@ -412,7 +465,7 @@ const getRows = async (page = 1) => {
     ...filterForm.value,
     ...current,
   };
-  let res = await sendRequest("POST", final, "/api/intranet/vehicles", "");
+  let res = await sendRequest("POST", final, "/api/intranet/inventories", "");
   rows.value = res.data;
   filterForm.value.page = res.current_page;
   next_page_url.value = res.next_page_url;
@@ -427,9 +480,9 @@ const postItem = async () => {
     return;
   }
   const final = {
-    ...add.value.formVehicle,
+    ...add.value.formInventory,
   };
-  let res = await sendRequest("POST", final, "/api/intranet/vehicle", "");
+  let res = await sendRequest("POST", final, "/api/intranet/inventory", "");
   showAdd.value = false;
   selectedItem.value = res;
   showEdit.value = true;
