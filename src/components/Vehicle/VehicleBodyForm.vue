@@ -3,9 +3,9 @@
     <q-item>
       <q-item-section>
         <q-select
-          v-model="formPrice.type_id"
+          v-model="formVehicleBody.type_id"
           :options="types"
-          label="Tipo de precio"
+          label="Tipo de carroseria"
           option-value="id"
           option-label="name"
           option-disable="inactive"
@@ -21,17 +21,12 @@
       </q-item-section>
       <q-item-section>
         <q-input
-          mask="#.##"
-          fill-mask="0"
-          reverse-fill-mask
-          prefix="$"
-          dense
+          v-model="formVehicleBody.configuration"
           filled
-          color="secondary"
-          v-model="formPrice.price"
-          label="Precio del producto"
+          dense
+          label="Configuracion de la carroceria"
           lazy-rules
-          hint
+          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
         />
       </q-item-section>
     </q-item>
@@ -42,20 +37,24 @@
 import { ref, onMounted } from "vue";
 import { sendRequest } from "src/boot/functions";
 
-const { price, inventory } = defineProps(["price", "inventory"]);
+const { vehicleBody } = defineProps(["vehicleBody"]);
 
 const myForm = ref(null);
 const types = ref([]);
 
-const formPrice = ref({
-  id: price ? price.id : null,
-  inventory_id: price ? price.inventory_id : inventory.id,
-  type_id: price ? price.type_id : null,
-  price: price ? price.price : null,
+const formVehicleBody = ref({
+  id: vehicleBody ? vehicleBody.id : null,
+  type_id: vehicleBody ? vehicleBody.type_id : null,
+  configuration: vehicleBody ? vehicleBody.configuration : null,
 });
 
 const getOptions = async () => {
-  let res = await sendRequest("GET", null, "/api/intranet/type/key/prices", "");
+  let res = await sendRequest(
+    "GET",
+    null,
+    "/api/intranet/type/key/vehicleBody",
+    ""
+  );
   types.value = res;
 };
 
@@ -68,7 +67,7 @@ onMounted(() => {
 });
 
 defineExpose({
-  formPrice,
+  formVehicleBody,
   validate,
 });
 </script>

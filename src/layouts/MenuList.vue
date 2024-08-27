@@ -56,6 +56,21 @@
       <q-item-section>Clientes</q-item-section>
     </q-item>
     <q-item
+      v-if="checkPosition('Gerente')"
+      clickable
+      v-ripple
+      to="/inventory"
+      :active="link === 'inventory'"
+      @click="link = 'inventory'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="inventory" />
+      </q-item-section>
+
+      <q-item-section>Inventario</q-item-section>
+    </q-item>
+    <q-item
       clickable
       v-ripple
       to="/vehicle"

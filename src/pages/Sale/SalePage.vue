@@ -81,9 +81,11 @@
               {{ props.row.agency.name }}
             </q-td>
             <q-td key="vehicle">
-              {{ props.row.vehicle.name }}
+              {{ props.row.inventory_with_trashed.vehicle.name }}
             </q-td>
-
+            <q-td key="series_vehicle">
+              {{ props.row.inventory_with_trashed.serial_number }}
+            </q-td>
             <q-td key="customer">
               {{ props.row.customer.name }}
             </q-td>
@@ -94,14 +96,6 @@
           <q-tr v-show="props.row._expand" :props="props">
             <q-td colspan="100%" class="bg-secondary">
               <q-item class="text-center">
-                <q-item-section>
-                  <div><strong>Serie del vehiculo:</strong></div>
-                  <div>{{ props.row.series_vehicle }}</div>
-                </q-item-section>
-                <q-item-section>
-                  <div><strong>Año del vehiculo:</strong></div>
-                  <div>{{ props.row.year_vehicle }}</div>
-                </q-item-section>
                 <q-item-section>
                   <div><strong>Estatus:</strong></div>
                   <div>{{ props.row.status.name }}</div>
@@ -193,7 +187,7 @@
           <q-input
             outlined
             dense
-            label="Buscar por factura o numero de serie"
+            label="Buscar por factura"
             v-model="filterForm.search"
             @update:model-value="onInputChange"
           >
@@ -260,11 +254,11 @@
         </q-item-section>
         <q-item-section>
           <q-select
-            v-model="filterForm.vehicle_id"
-            :options="vehicles"
-            label="Vehiculo"
+            v-model="filterForm.inventory_id"
+            :options="inventories"
+            label="# de serie"
             option-value="id"
-            option-label="name"
+            option-label="serial_number"
             option-disable="inactive"
             emit-value
             map-options
@@ -347,7 +341,7 @@
           </q-item-label>
         </q-item-section>
         <q-item-section side>
-          <q-btn label="Cerrar" color="red" v-close-popup @click="getRows" />
+          <q-btn label="Cerrar" color="red" v-close-popup @click="close" />
         </q-item-section>
       </q-item>
       <q-separator />
@@ -390,7 +384,7 @@ const filterForm = ref({
   status_id: null,
   sales_channel_id: null,
   type_id: null,
-  vehicle_id: null,
+  inventory_id: null,
   customer_id: customer ? customer.id : null,
   employee_id: null,
 });
@@ -399,16 +393,11 @@ const agencies = ref([]);
 const statuses = ref([]);
 const sales_channels = ref([]);
 const types = ref([]);
-const vehicles = ref([]);
+const inventories = ref([]);
 const customers = ref([]);
 const employees = ref({});
 
 const columns = [
-  {
-    name: "expand",
-    field: "expand",
-    align: "left",
-  },
   {
     name: "editar",
     field: "editar",
@@ -451,12 +440,12 @@ const columns = [
     align: "left",
     label: "Vehiculo",
   },
-  // {
-  //   name: "series_vehicle",
-  //   field: "series_vehicle",
-  //   align: "left",
-  //   label: "Serie vehiculo",
-  // },
+  {
+    name: "series_vehicle",
+    field: "series_vehicle",
+    align: "left",
+    label: "Serie vehiculo",
+  },
   // {
   //   name: "year_vehicle",
   //   field: "year_vehicle",
@@ -499,7 +488,7 @@ const clearFilters = () => {
   filterForm.value.status_id = null;
   filterForm.value.sales_channel_id = null;
   filterForm.value.type_id = null;
-  filterForm.value.vehicle_id = null;
+  filterForm.value.inventory_id = null;
   filterForm.value.customer_id = null;
   filterForm.value.employee_id = null;
   current_page.value = 1;
@@ -512,7 +501,7 @@ const getOptions = async () => {
   statuses.value = res.statuses;
   sales_channels.value = res.sales_channels;
   types.value = res.types;
-  vehicles.value = res.vehicles;
+  inventories.value = res.inventories;
   customers.value = res.customers;
   employees.value = res.employees;
 };
@@ -558,6 +547,11 @@ const onInputChange = () => {
   timeout = setTimeout(() => {
     getRows();
   }, 2000);
+};
+
+const close = () => {
+  getRows();
+  getOptions();
 };
 
 onMounted(() => {

@@ -9,8 +9,7 @@
     narrow-indicator
   >
     <q-tab name="info" icon="local_shipping" label="Informacion" />
-    <q-tab name="features" icon="featured_play_list" label="Caracteristicas" />
-    <q-tab name="docs" icon="folder" label="Documentos" />
+    <q-tab name="prices" icon="attach_money" label="Precios" />
   </q-tabs>
   <q-separator></q-separator>
   <q-tab-panels
@@ -31,35 +30,17 @@
             <q-btn label="Guardar" color="blue" @click="putItem" />
           </q-item-section>
         </q-item>
-        <vehicle-form
-          ref="edit"
-          :vehicle="currentVehicle"
-          :key="currentVehicle"
-        />
+        <inventory-form ref="edit" :inventory="current" :key="current" />
       </q-card>
     </q-tab-panel>
-    <q-tab-panel name="features">
+    <q-tab-panel name="prices">
       <q-card class="q-pa-sm">
         <q-item dense>
           <q-item-section>
-            <q-item-label class="text-h6"> Caracteristicas </q-item-label>
+            <q-item-label class="text-h6"> Precios </q-item-label>
           </q-item-section>
         </q-item>
-        <vehicle-feature-index
-          :vehicle="currentVehicle"
-          :key="currentVehicle"
-        />
-      </q-card>
-    </q-tab-panel>
-
-    <q-tab-panel name="docs">
-      <q-card class="q-pa-sm">
-        <q-item dense>
-          <q-item-section>
-            <q-item-label class="text-h6"> Documentos </q-item-label>
-          </q-item-section>
-        </q-item>
-        <vehicle-doc-index :vehicle="currentVehicle" :key="currentVehicle" />
+        <price-index ref="edit" :inventory="current" :key="current" />
       </q-card>
     </q-tab-panel>
   </q-tab-panels>
@@ -69,14 +50,13 @@
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
-import VehicleForm from "src/components/Vehicle/VehicleForm.vue";
-import VehicleFeatureIndex from "src/components/VehicleFeature/VehicleFeatureIndex.vue";
-import VehicleDocIndex from "src/components/VehicleDoc/VehicleDocIndex.vue";
+import InventoryForm from "src/components/Inventory/InventoryForm.vue";
+import PriceIndex from "src/components/Price/PriceIndex.vue";
 
-const { vehicle } = defineProps(["vehicle"]);
+const { inventory } = defineProps(["inventory"]);
 
 const tab = ref("info");
-const currentVehicle = ref(null);
+const current = ref(null);
 const edit = ref(null);
 
 const putItem = async () => {
@@ -86,18 +66,18 @@ const putItem = async () => {
     return;
   }
   const final = {
-    ...edit.value.formVehicle,
+    ...edit.value.formInventory,
   };
   let res = await sendRequest(
     "PUT",
     final,
-    "/api/intranet/vehicle/" + final.id,
+    "/api/intranet/inventory/" + final.id,
     ""
   );
-  currentVehicle.value = res;
+  current.value = res;
 };
 
 onMounted(() => {
-  currentVehicle.value = vehicle;
+  current.value = inventory;
 });
 </script>

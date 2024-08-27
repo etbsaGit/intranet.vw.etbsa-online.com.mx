@@ -1,15 +1,10 @@
 <template>
-  <q-item class="custom-item" align="center">
-    <q-item-section>
-      <q-item-label class="custom-label">-Clientes-</q-item-label>
-    </q-item-section>
-  </q-item>
   <q-item>
     <q-item-section>
       <q-table
         flat
         bordered
-        title="Clientes"
+        title="Inventario"
         :rows="rows"
         :columns="columns"
         row-key="id"
@@ -22,7 +17,7 @@
               <q-btn
                 dense
                 outline
-                label="Agregar cliente"
+                label="Agregar vehiculo al inventario"
                 color="primary"
                 @click="showAdd = true"
                 icon="add_circle"
@@ -70,25 +65,42 @@
             />
           </q-td>
         </template>
+        <template v-slot:body-cell-vehicle="props">
+          <q-td :props="props">
+            {{ props.row.vehicle.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            {{ props.row.status.name }}
+          </q-td>
+        </template>
         <template v-slot:body-cell-type="props">
-          <q-td>
-            {{ props.row.type?.name }}
+          <q-td :props="props">
+            {{ props.row.type.name }}
           </q-td>
         </template>
-        <template v-slot:body-cell-state="props">
-          <q-td>
-            {{ props.row.state?.name }}
+        <template v-slot:body-cell-agency="props">
+          <q-td :props="props">
+            {{ props.row.agency.name }}
           </q-td>
         </template>
-        <template v-slot:body-cell-municipality="props">
-          <q-td>
-            {{ props.row.municipality?.name }}
+        <template v-slot:body-cell-vehicle_body="props">
+          <q-td :props="props">
+            <q-item>
+              <q-item-section>
+                <q-item-label>
+                  {{ props.row.vehicle_body?.configuration }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ props.row.vehicle_body?.type.name }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
           </q-td>
         </template>
-        <template v-slot:body-cell-phone="props">
-          <q-td>
-            {{ formatPhoneNumber(props.row.phone) }}
-          </q-td>
+        <template v-slot:body-cell-invoice_date="props">
+          <q-td :props="props"> {{ props.row.days_in_inventory }} dias </q-td>
         </template>
       </q-table>
     </q-item-section>
@@ -99,8 +111,9 @@
     transition-show="slide-up"
     transition-hide="slide-down"
     persistent
+    full-width
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Agregar</q-item-label>
@@ -115,14 +128,14 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <customer-form ref="add" />
+          <inventory-form ref="add" />
         </q-item-section>
       </q-item>
     </q-card>
   </q-dialog>
 
   <q-dialog v-model="showFilters" position="top" full-width>
-    <q-card style="width: 900px">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Filtros</q-item-label>
@@ -156,7 +169,7 @@
           <q-input
             outlined
             dense
-            label="Buscar por nombre, rfc, email o telefono"
+            label="Buscar por # de serie, # economico, # inventario o factura"
             v-model="filterForm.search"
             @update:model-value="onInputChange"
           >
@@ -166,8 +179,60 @@
           </q-input>
         </q-item-section>
       </q-item>
-
       <q-item>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.vehicle_id"
+            :options="vehicles"
+            label="Modelo"
+            option-value="id"
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.vehicle_body_id"
+            :options="vehicleBodies"
+            label="Carroceria"
+            option-value="id"
+            option-label="configuration"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+          />
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.status_id"
+            :options="statuses"
+            label="Estatus"
+            option-value="id"
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+          />
+        </q-item-section>
         <q-item-section>
           <q-select
             v-model="filterForm.type_id"
@@ -180,34 +245,16 @@
             map-options
             transition-show="jump-up"
             transition-hide="jump-up"
-            clearable
             outlined
             dense
+            clearable
           />
         </q-item-section>
         <q-item-section>
           <q-select
-            v-model="filterForm.state_id"
-            :options="states"
-            label="Estado"
-            option-value="id"
-            option-label="name"
-            option-disable="inactive"
-            emit-value
-            map-options
-            transition-show="jump-up"
-            transition-hide="jump-up"
-            clearable
-            outlined
-            dense
-            @update:model-value="updateMunicipalities(filterForm.state_id)"
-          />
-        </q-item-section>
-        <q-item-section>
-          <q-select
-            v-model="filterForm.municipality_id"
-            :options="municipalities"
-            label="Ciudad"
+            v-model="filterForm.agency_id"
+            :options="agencies"
+            label="Agencia"
             option-value="id"
             option-label="name"
             option-disable="inactive"
@@ -234,21 +281,18 @@
     <q-card style="width: 100%">
       <q-item class="text-white bg-primary">
         <q-item-section>
-          <q-item-label class="text-h6">{{ selectedItem.name }}</q-item-label>
+          <q-item-label class="text-h6">{{
+            selectedItem.serial_number
+          }}</q-item-label>
         </q-item-section>
         <q-item-section side>
-          <q-btn
-            label="Cerrar"
-            color="red"
-            v-close-popup
-            @click="getRows(current_page)"
-          />
+          <q-btn label="Cerrar" color="red" v-close-popup @click="getRows" />
         </q-item-section>
       </q-item>
       <q-separator />
-      <q-item class="q-pa-none">
+      <q-item>
         <q-item-section>
-          <customer-all-form ref="edit" :customer="selectedItem" />
+          <inventory-all-form ref="edit" :inventory="selectedItem" />
         </q-item-section>
       </q-item>
     </q-card>
@@ -258,10 +302,9 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
-import { formatPhoneNumber } from "src/boot/format.js";
 
-import CustomerForm from "src/components/Customer/CustomerForm.vue";
-import CustomerAllForm from "src/components/Customer/CustomerAllForm.vue";
+import InventoryForm from "src/components/Inventory/InventoryForm.vue";
+import InventoryAllForm from "src/components/Inventory/InventoryAllForm.vue";
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -278,14 +321,18 @@ const current_page = ref(1);
 
 const filterForm = ref({
   search: null,
+  status_id: null,
   type_id: null,
-  state_id: null,
-  municipality_id: null,
+  agency_id: null,
+  vehicle_id: null,
+  vehicle_body_id: null,
 });
 
+const statuses = ref([]);
 const types = ref([]);
-const states = ref([]);
-const municipalities = ref([]);
+const agencies = ref([]);
+const vehicles = ref([]);
+const vehicleBodies = ref([]);
 
 const columns = [
   {
@@ -295,45 +342,87 @@ const columns = [
     label: "detalle",
   },
   {
-    name: "id_customer",
-    label: "# Cliente",
+    name: "vehicle",
+    label: "Modelo",
     align: "left",
-    field: "id_customer",
+    field: "vehicle",
     sortable: true,
   },
   {
-    name: "name",
-    label: "Nombre",
+    name: "serial_number",
+    label: "Numero de serie",
     align: "left",
-    field: "name",
+    field: "serial_number",
     sortable: true,
   },
   {
-    name: "rfc",
-    label: "RFC",
+    name: "m_y",
+    label: "m_y",
     align: "left",
-    field: "rfc",
+    field: "m_y",
+    sortable: true,
+  },
+  // {
+  //   name: "economical_number",
+  //   label: "Numero economico",
+  //   align: "left",
+  //   field: "economical_number",
+  //   sortable: true,
+  // },
+  // {
+  //   name: "inventory_number",
+  //   label: "Numero de inventario",
+  //   align: "left",
+  //   field: "inventory_number",
+  //   sortable: true,
+  // },
+  // {
+  //   name: "invoice",
+  //   label: "Factura",
+  //   align: "left",
+  //   field: "invoice",
+  //   sortable: true,
+  // },
+  {
+    name: "invoice_date",
+    label: "Antigüedad",
+    align: "left",
+    field: "invoice_date",
     sortable: true,
   },
   {
-    name: "phone",
-    label: "Telefono",
+    name: "year",
+    label: "Año",
     align: "left",
-    field: "phone",
+    field: "year",
     sortable: true,
   },
   {
-    name: "state",
-    label: "Estado",
+    name: "status",
+    label: "Estatus",
     align: "left",
-    field: "state",
+    field: "status",
     sortable: true,
   },
   {
-    name: "municipality",
-    label: "Ciudad",
+    name: "type",
+    label: "Tipo",
     align: "left",
-    field: "municipality",
+    field: "type",
+    sortable: true,
+  },
+  {
+    name: "agency",
+    label: "Agencia",
+    align: "left",
+    field: "agency",
+    sortable: true,
+  },
+  {
+    name: "vehicle_body",
+    label: "Carroceria",
+    align: "left",
+    field: "vehicle_body",
     sortable: true,
   },
 ];
@@ -345,9 +434,11 @@ const openEdit = (item) => {
 
 const clearFilters = () => {
   filterForm.value.search = null;
+  filterForm.value.status_id = null;
   filterForm.value.type_id = null;
-  filterForm.value.state_id = null;
-  filterForm.value.municipality_id = null;
+  filterForm.value.agency_id = null;
+  filterForm.value.vehicle_id = null;
+  filterForm.value.vehicle_body_id = null;
   current_page.value = 1;
   getRows();
 };
@@ -356,30 +447,14 @@ const getOptions = async () => {
   let res = await sendRequest(
     "GET",
     null,
-    "/api/intranet/customer/options",
+    "/api/intranet/inventories/options",
     ""
   );
-  states.value = res.states;
+  statuses.value = res.statuses;
   types.value = res.types;
-};
-
-const updateMunicipalities = (id) => {
-  filterForm.value.municipality_id = null;
-  municipalities.value = [];
-  getMunicipalities(id);
-};
-
-const getMunicipalities = async (id) => {
-  if (id == null) {
-    return;
-  }
-  let res = await sendRequest(
-    "GET",
-    null,
-    "/api/intranet/municipality/state/" + id,
-    ""
-  );
-  municipalities.value = res;
+  agencies.value = res.agencies;
+  vehicles.value = res.vehicles;
+  vehicleBodies.value = res.vehicleBodies;
 };
 
 const getRows = async (page = 1) => {
@@ -390,7 +465,7 @@ const getRows = async (page = 1) => {
     ...filterForm.value,
     ...current,
   };
-  let res = await sendRequest("POST", final, "/api/intranet/customers", "");
+  let res = await sendRequest("POST", final, "/api/intranet/inventories", "");
   rows.value = res.data;
   filterForm.value.page = res.current_page;
   next_page_url.value = res.next_page_url;
@@ -405,9 +480,9 @@ const postItem = async () => {
     return;
   }
   const final = {
-    ...add.value.formCustomer,
+    ...add.value.formInventory,
   };
-  let res = await sendRequest("POST", final, "/api/intranet/customer", "");
+  let res = await sendRequest("POST", final, "/api/intranet/inventory", "");
   showAdd.value = false;
   selectedItem.value = res;
   showEdit.value = true;

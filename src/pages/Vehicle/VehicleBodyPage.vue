@@ -2,51 +2,48 @@
   <q-item>
     <q-btn
       dense
-      label="Agregar fecha"
+      label="Agregar Carroceria"
       color="primary"
-      icon="add_circle"
       @click="showAdd = true"
+      icon="add_circle"
     />
   </q-item>
   <q-item>
     <q-item-section>
-      <q-list separator>
-        <q-item align="center">
-          <q-item-section avatar>
-            <q-item-label><strong>Editar</strong></q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label><strong>Fecha</strong></q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label><strong>Concepto de fecha</strong></q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label><strong>Comentarios</strong></q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item v-for="(date, index) in rows" :key="index" align="center">
-          <q-item-section avatar>
-            <q-btn
-              :disable="!checkPosition('Gerente')"
-              dense
-              color="primary"
-              flat
-              icon="edit_square"
-              @click="openEdit(date)"
-            />
-          </q-item-section>
-          <q-item-section>
-            {{ date.date }}
-          </q-item-section>
-          <q-item-section>
-            {{ date.type.name }}
-          </q-item-section>
-          <q-item-section>
-            {{ date.comments }}
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <q-table
+        flat
+        bordered
+        title="Carrocerias"
+        :rows="rows"
+        :columns="columns"
+        row-key="name"
+        dense
+        :rows-per-page-options="[0]"
+      >
+        <template v-slot:body-cell-name="props">
+          <q-td>
+            <q-item dense>
+              <q-item-section avatar>
+                <q-btn
+                  dense
+                  color="primary"
+                  flat
+                  icon="edit_square"
+                  @click="openEdit(props.row)"
+                />
+              </q-item-section>
+              <q-item-section avatar>
+                <q-item-label>
+                  {{ props.row.configuration }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ props.row.type.name }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-td>
+        </template>
+      </q-table>
     </q-item-section>
   </q-item>
 
@@ -71,7 +68,7 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <sale-date-form ref="add" :sale="sale" />
+          <vehicle-body-form ref="add" />
         </q-item-section>
       </q-item>
     </q-card>
@@ -101,7 +98,7 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <sale-date-form ref="edit" :date="selectedItem" />
+          <vehicle-body-form ref="edit" :vehicleBody="selectedItem" />
         </q-item-section>
       </q-item>
     </q-card>
@@ -111,12 +108,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
-import { formatDate } from "src/boot/format";
-import { checkPosition } from "src/boot/checks";
 
-import SaleDateForm from "./SaleDateForm.vue";
-
-const { sale } = defineProps(["sale"]);
+import VehicleBodyForm from "src/components/Vehicle/VehicleBodyForm.vue";
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -125,18 +118,21 @@ const add = ref(null);
 const showEdit = ref(false);
 const edit = ref(null);
 
+const columns = [
+  {
+    name: "name",
+    align: "left",
+    field: "name",
+  },
+];
+
 const openEdit = (item) => {
   selectedItem.value = item;
   showEdit.value = true;
 };
 
-const getRows = async (id) => {
-  let res = await sendRequest(
-    "GET",
-    null,
-    "/api/intranet/saleDate/sale/" + id,
-    ""
-  );
+const getRows = async () => {
+  let res = await sendRequest("GET", null, "/api/intranet/vehicleBody", "");
   rows.value = res;
 };
 
@@ -147,11 +143,11 @@ const postItem = async () => {
     return;
   }
   const final = {
-    ...add.value.formDate,
+    ...add.value.formVehicleBody,
   };
-  let res = await sendRequest("POST", final, "/api/intranet/saleDate", "");
+  let res = await sendRequest("POST", final, "/api/intranet/vehicleBody", "");
   showAdd.value = false;
-  getRows(sale.id);
+  getRows();
 };
 
 const putItem = async () => {
@@ -161,32 +157,31 @@ const putItem = async () => {
     return;
   }
   const final = {
-    ...edit.value.formDate,
+    ...edit.value.formVehicleBody,
   };
   let res = await sendRequest(
     "PUT",
     final,
-    "/api/intranet/saleDate/" + final.id,
+    "/api/intranet/vehicleBody/" + final.id,
     ""
   );
   showEdit.value = false;
-  getRows(sale.id);
+  getRows();
 };
 
 const destroyItem = async () => {
-  const id = selectedItem.value.id;
   let res = await sendRequest(
     "DELETE",
     null,
-    "/api/intranet/saleDate/" + id,
+    "/api/intranet/vehicleBody/" + selectedItem.value.id,
     ""
   );
   selectedItem.value = null;
   showEdit.value = false;
-  getRows(sale.id);
+  getRows();
 };
 
 onMounted(() => {
-  getRows(sale.id);
+  getRows();
 });
 </script>

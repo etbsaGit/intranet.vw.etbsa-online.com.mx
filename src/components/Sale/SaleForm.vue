@@ -82,11 +82,11 @@
     <q-item>
       <q-item-section>
         <q-select
-          v-model="formSale.vehicle_id"
+          v-model="formSale.inventory_id"
           :options="vehicles"
           label="Vehiculo"
           option-value="id"
-          option-label="name"
+          option-label="serial_number"
           option-disable="inactive"
           emit-value
           map-options
@@ -96,27 +96,6 @@
           dense
           clearable
           :rules="[(val) => val !== null || 'Obligatorio']"
-        />
-      </q-item-section>
-      <q-item-section>
-        <q-input
-          v-model="formSale.series_vehicle"
-          filled
-          dense
-          label="Numero de serie"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
-        />
-      </q-item-section>
-      <q-item-section>
-        <q-input
-          v-model="formSale.year_vehicle"
-          filled
-          dense
-          label="Año del vehiculo"
-          mask="####"
-          lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
         />
       </q-item-section>
     </q-item>
@@ -215,9 +194,7 @@ const formSale = ref({
   sales_channel_id: sale ? sale.sales_channel_id : null,
   type_id: sale ? sale.type_id : null,
   agency_id: sale ? sale.agency_id : null,
-  series_vehicle: sale ? sale.series_vehicle : null,
-  year_vehicle: sale ? sale.year_vehicle : null,
-  vehicle_id: sale ? sale.vehicle_id : null,
+  inventory_id: sale ? sale.inventory_id : null,
   customer_id: sale ? sale.customer_id : customer ? customer.id : null,
   employee_id: sale ? sale.employee_id : null,
   comments: sale ? sale.comments : null,

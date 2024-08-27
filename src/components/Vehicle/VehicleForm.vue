@@ -40,18 +40,6 @@
 
     <q-item>
       <q-item-section>
-        <q-input
-          type="number"
-          dense
-          filled
-          color="secondary"
-          v-model="formVehicle.quantity"
-          label="Cantidad"
-          lazy-rules
-          hint
-        />
-      </q-item-section>
-      <q-item-section>
         <q-select
           v-model="formVehicle.brand_id"
           :options="brands"
@@ -129,7 +117,6 @@ const formVehicle = ref({
   sku: vehicle ? vehicle.sku : null,
   name: vehicle ? vehicle.name : null,
   description: vehicle ? vehicle.description : null,
-  quantity: vehicle ? vehicle.quantity : 0,
   active: vehicle ? vehicle.active : false,
   featured: vehicle ? vehicle.featured : false,
   type_id: vehicle ? vehicle.type_id : null,

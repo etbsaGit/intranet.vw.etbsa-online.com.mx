@@ -1,9 +1,4 @@
 <template>
-  <q-item class="custom-item" align="center">
-    <q-item-section>
-      <q-item-label class="custom-label">-Vehiculos-</q-item-label>
-    </q-item-section>
-  </q-item>
   <q-item>
     <q-item-section>
       <q-table
@@ -22,7 +17,7 @@
               <q-btn
                 dense
                 outline
-                label="Agregar vehiculo"
+                label="Agregar vehiculo al catalogo"
                 color="primary"
                 @click="showAdd = true"
                 icon="add_circle"
@@ -351,13 +346,13 @@ const columns = [
   //   field: "description",
   //   sortable: true,
   // },
-  // {
-  //   name: "quantity",
-  //   label: "Cantidad",
-  //   align: "left",
-  //   field: "quantity",
-  //   sortable: true,
-  // },
+  {
+    name: "quantity",
+    label: "Cantidad",
+    align: "left",
+    field: "quantity",
+    sortable: true,
+  },
   {
     name: "active",
     label: "Estado",
