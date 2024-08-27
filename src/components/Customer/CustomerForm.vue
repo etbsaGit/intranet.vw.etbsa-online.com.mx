@@ -71,6 +71,26 @@
         />
       </q-item-section>
     </q-item>
+    <q-item v-if="isFísicaSelected">
+      <q-item-section>
+        <q-select
+          v-model="formCustomer.agent_id"
+          :options="customers"
+          label="Empresa"
+          option-value="id"
+          option-label="name"
+          option-disable="inactive"
+          emit-value
+          map-options
+          transition-show="jump-up"
+          transition-hide="jump-up"
+          filled
+          dense
+          clearable
+          hint
+        />
+      </q-item-section>
+    </q-item>
     <q-separator />
     <q-item>
       <q-item-section>
@@ -190,7 +210,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { sendRequest } from "src/boot/functions";
 
 const { customer } = defineProps(["customer"]);
@@ -198,6 +218,7 @@ const { customer } = defineProps(["customer"]);
 const states = ref([]);
 const municipalities = ref([]);
 const types = ref([]);
+const customers = ref([]);
 
 const myForm = ref(null);
 
@@ -216,6 +237,7 @@ const formCustomer = ref({
   municipality_id: customer ? customer.municipality_id : null,
   state_id: customer ? customer.state_id : null,
   type_id: customer ? customer.type_id : null,
+  agent_id: customer ? customer.agent_id : null,
 });
 
 const getOptions = async () => {
@@ -227,6 +249,7 @@ const getOptions = async () => {
   );
   states.value = res.states;
   types.value = res.types;
+  customers.value = res.customers;
 };
 
 const updateMunicipalities = (id) => {
@@ -247,6 +270,13 @@ const getMunicipalities = async (id) => {
   );
   municipalities.value = res;
 };
+
+const isFísicaSelected = computed(() => {
+  const selectedType = types.value.find(
+    (type) => type.id === formCustomer.value.type_id
+  );
+  return selectedType ? selectedType.name === "física" : false;
+});
 
 const validate = async () => {
   return await myForm.value.validate();
