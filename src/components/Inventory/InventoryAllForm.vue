@@ -9,6 +9,7 @@
     narrow-indicator
   >
     <q-tab name="info" icon="local_shipping" label="Informacion" />
+    <q-tab name="prices" icon="attach_money" label="Precios" />
   </q-tabs>
   <q-separator></q-separator>
   <q-tab-panels
@@ -32,6 +33,16 @@
         <inventory-form ref="edit" :inventory="current" :key="current" />
       </q-card>
     </q-tab-panel>
+    <q-tab-panel name="prices">
+      <q-card class="q-pa-sm">
+        <q-item dense>
+          <q-item-section>
+            <q-item-label class="text-h6"> Precios </q-item-label>
+          </q-item-section>
+        </q-item>
+        <price-index ref="edit" :inventory="current" :key="current" />
+      </q-card>
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -40,6 +51,7 @@ import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
 import InventoryForm from "src/components/Inventory/InventoryForm.vue";
+import PriceIndex from "src/components/Price/PriceIndex.vue";
 
 const { inventory } = defineProps(["inventory"]);
 

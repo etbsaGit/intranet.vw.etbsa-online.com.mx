@@ -28,6 +28,7 @@
         <q-item v-for="(date, index) in rows" :key="index" align="center">
           <q-item-section avatar>
             <q-btn
+              :disable="!checkPosition('Gerente')"
               dense
               color="primary"
               flat
@@ -111,6 +112,7 @@
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { formatDate } from "src/boot/format";
+import { checkPosition } from "src/boot/checks";
 
 import SaleDateForm from "./SaleDateForm.vue";
 

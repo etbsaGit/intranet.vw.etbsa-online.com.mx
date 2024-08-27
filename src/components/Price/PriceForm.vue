@@ -42,14 +42,14 @@
 import { ref, onMounted } from "vue";
 import { sendRequest } from "src/boot/functions";
 
-const { price, vehicle } = defineProps(["price", "vehicle"]);
+const { price, inventory } = defineProps(["price", "inventory"]);
 
 const myForm = ref(null);
 const types = ref([]);
 
 const formPrice = ref({
   id: price ? price.id : null,
-  vehicle_id: price ? price.vehicle_id : vehicle.id,
+  inventory_id: price ? price.inventory_id : inventory.id,
   type_id: price ? price.type_id : null,
   price: price ? price.price : null,
 });

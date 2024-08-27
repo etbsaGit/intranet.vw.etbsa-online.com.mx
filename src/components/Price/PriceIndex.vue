@@ -62,7 +62,7 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <price-form ref="add" :vehicle="vehicle" />
+          <price-form ref="add" :inventory="inventory" />
         </q-item-section>
       </q-item>
     </q-card>
@@ -105,7 +105,7 @@ import { sendRequest, notifyIncomplete } from "src/boot/functions";
 
 import PriceForm from "src/components/Price/PriceForm.vue";
 
-const { vehicle } = defineProps(["vehicle"]);
+const { inventory } = defineProps(["inventory"]);
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -123,7 +123,7 @@ const getRows = async (id) => {
   let res = await sendRequest(
     "GET",
     null,
-    "/api/intranet/price/vehicle/" + id,
+    "/api/intranet/price/inventory/" + id,
     ""
   );
   rows.value = res;
@@ -140,7 +140,7 @@ const postItem = async () => {
   };
   let res = await sendRequest("POST", final, "/api/intranet/price", "");
   showAdd.value = false;
-  getRows(vehicle.id);
+  getRows(inventory.id);
 };
 
 const putItem = async () => {
@@ -159,7 +159,7 @@ const putItem = async () => {
     ""
   );
   showEdit.value = false;
-  getRows(vehicle.id);
+  getRows(inventory.id);
 };
 
 const destroyItem = async () => {
@@ -167,10 +167,10 @@ const destroyItem = async () => {
   let res = await sendRequest("DELETE", null, "/api/intranet/price/" + id, "");
   selectedItem.value = null;
   showEdit.value = false;
-  getRows(vehicle.id);
+  getRows(inventory.id);
 };
 
 onMounted(() => {
-  getRows(vehicle.id);
+  getRows(inventory.id);
 });
 </script>
