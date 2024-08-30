@@ -18,8 +18,9 @@
           dense
           label="# Economico"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
+          hint
         />
+        <!-- :rules="[(val) => (val && val.length > 0) || 'Obligatorio']" -->
       </q-item-section>
       <q-item-section>
         <q-input
@@ -28,8 +29,9 @@
           dense
           label="# Inventario"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
+          hint
         />
+        <!-- :rules="[(val) => (val && val.length > 0) || 'Obligatorio']" -->
       </q-item-section>
       <q-item-section>
         <q-input
@@ -38,8 +40,9 @@
           dense
           label="# de factura"
           lazy-rules
-          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
+          hint
         />
+        <!-- :rules="[(val) => (val && val.length > 0) || 'Obligatorio']" -->
       </q-item-section>
       <q-item-section>
         <q-input
@@ -47,8 +50,10 @@
           filled
           v-model="formInventory.invoice_date"
           label="Fecha de factura"
-          :rules="[(val) => val !== null || 'Obligatorio']"
+          mask="date"
+          hint
         >
+          <!-- :rules="[(val) => val !== null || 'Obligatorio']" -->
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy
@@ -116,8 +121,9 @@
           label="Año del vehiculo"
           lazy-rules
           mask="####"
-          :rules="[(val) => val !== null || 'Obligatorio']"
+          hint
         />
+        <!-- :rules="[(val) => val !== null || 'Obligatorio']" -->
       </q-item-section>
       <q-item-section>
         <q-input
@@ -164,8 +170,9 @@
           filled
           dense
           clearable
-          :rules="[(val) => val !== null || 'Obligatorio']"
+          hint
         />
+        <!-- :rules="[(val) => val !== null || 'Obligatorio']" -->
       </q-item-section>
       <q-item-section>
         <q-select

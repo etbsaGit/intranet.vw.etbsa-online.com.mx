@@ -77,7 +77,7 @@
         </template>
         <template v-slot:body-cell-type="props">
           <q-td :props="props">
-            {{ props.row.type.name }}
+            {{ props.row.type?.name }}
           </q-td>
         </template>
         <template v-slot:body-cell-agency="props">
@@ -100,7 +100,10 @@
           </q-td>
         </template>
         <template v-slot:body-cell-invoice_date="props">
-          <q-td :props="props"> {{ props.row.days_in_inventory }} dias </q-td>
+          <q-td v-if="props.row.days_in_inventory" :props="props">
+            {{ props.row.days_in_inventory }} dias
+          </q-td>
+          <q-td v-else :props="props">No disponible</q-td>
         </template>
       </q-table>
     </q-item-section>
