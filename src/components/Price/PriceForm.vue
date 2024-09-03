@@ -21,8 +21,7 @@
       </q-item-section>
       <q-item-section>
         <q-input
-          mask="#.##"
-          fill-mask="0"
+          mask="#,###,###.##"
           reverse-fill-mask
           prefix="$"
           dense

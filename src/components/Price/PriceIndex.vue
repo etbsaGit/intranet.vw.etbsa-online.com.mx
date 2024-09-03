@@ -35,7 +35,7 @@
           <q-item-section>
             {{ price.type.name }}
           </q-item-section>
-          <q-item-section> ${{ price.price }} </q-item-section>
+          <q-item-section> ${{ formatNumber(price.price) }} </q-item-section>
         </q-item>
       </q-list>
     </q-item-section>
@@ -168,6 +168,13 @@ const destroyItem = async () => {
   selectedItem.value = null;
   showEdit.value = false;
   getRows(inventory.id);
+};
+
+const formatNumber = (number) => {
+  // Separar los dígitos antes del punto decimal en grupos de tres
+  let parts = number.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
 };
 
 onMounted(() => {

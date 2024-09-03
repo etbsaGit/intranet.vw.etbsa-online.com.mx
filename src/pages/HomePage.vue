@@ -38,7 +38,7 @@ defineOptions({
   <q-page-sticky position="bottom-right" :offset="[30, 30]">
     <q-btn dense flat>
       <q-avatar size="200px" square>
-        <img src="src\assets\SU.png" />
+        <img src="~src\assets\SU.png" />
       </q-avatar>
     </q-btn>
   </q-page-sticky>
