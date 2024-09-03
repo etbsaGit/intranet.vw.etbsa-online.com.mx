@@ -15,7 +15,17 @@
               "
             />
           </router-link>
-          VW Bajio
+          VW Camiones y autobuses Bajio
+          <router-link to="/">
+            <q-img
+              src="..\assets\SU.png"
+              style="
+                max-width: 7%;
+                background-color: #061e47;
+                border-radius: 50px;
+              "
+            />
+          </router-link>
         </q-toolbar-title>
         <q-space />
 

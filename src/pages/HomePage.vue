@@ -35,6 +35,13 @@ defineOptions({
     <q-carousel-slide :name="1" img-src="~src\assets\index3.jpg" />
     <q-carousel-slide :name="2" img-src="~src\assets\index.jpg" />
   </q-carousel>
+  <q-page-sticky position="bottom-right" :offset="[30, 30]">
+    <q-btn dense flat>
+      <q-avatar size="200px" square>
+        <img src="src\assets\SU.png" />
+      </q-avatar>
+    </q-btn>
+  </q-page-sticky>
 </template>
 
 <script setup>
