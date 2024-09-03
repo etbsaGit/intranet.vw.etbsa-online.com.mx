@@ -30,6 +30,20 @@
     <q-item
       clickable
       v-ripple
+      to="/follow"
+      :active="link === 'follow'"
+      @click="link = 'follow'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="connect_without_contact" />
+      </q-item-section>
+
+      <q-item-section>Seguimientos</q-item-section>
+    </q-item>
+    <q-item
+      clickable
+      v-ripple
       to="/sale"
       :active="link === 'sale'"
       @click="link = 'sale'"
