@@ -4,7 +4,7 @@
       <q-table
         flat
         bordered
-        title="Vehiculos"
+        title="Seguimientos"
         :rows="rows"
         :columns="columns"
         row-key="id"
@@ -13,11 +13,11 @@
       >
         <template v-slot:top-left>
           <q-item>
-            <q-item-section v-if="checkPosition('Gerente')">
+            <q-item-section>
               <q-btn
                 dense
                 outline
-                label="Agregar vehiculo al catalogo"
+                label="Agregar seguimiento"
                 color="primary"
                 @click="showAdd = true"
                 icon="add_circle"
@@ -65,67 +65,50 @@
             />
           </q-td>
         </template>
-        <template v-slot:body-cell-type="props">
+        <template v-slot:body-cell-customer="props">
           <q-td>
-            {{ props.row.type?.name }}
+            {{ props.row.customer.name }}
           </q-td>
         </template>
-        <template v-slot:body-cell-active="props">
+        <template v-slot:body-cell-employee="props">
           <q-td>
-            <q-chip
-              v-if="props.row.active == 0"
-              color="grey-10"
-              text-color="white"
-            >
-              No activo
-            </q-chip>
-            <q-chip
-              v-if="props.row.active == 1"
-              color="blue"
-              text-color="white"
-            >
-              Activo
-            </q-chip>
+            {{ props.row.employee.shortName }}
           </q-td>
         </template>
-        <template v-slot:body-cell-featured="props">
+        <template v-slot:body-cell-vehicle="props">
           <q-td>
-            <q-chip
-              v-if="props.row.featured == 0"
-              color="grey-10"
-              text-color="white"
-            >
-              No destacado
-            </q-chip>
-            <q-chip
-              v-if="props.row.featured == 1"
-              color="green"
-              text-color="white"
-            >
-              Destacado
-            </q-chip>
+            {{ props.row.lastVehicle?.name }}
           </q-td>
         </template>
-        <template v-slot:body-cell-brand="props">
+        <template v-slot:body-cell-status="props">
           <q-td>
-            <q-item dense>
-              <q-item-section avatar>
-                <q-avatar
-                  color="primary"
-                  text-color="white"
-                  v-if="props.row.brand && props.row.brand.logopath"
-                >
-                  <img :src="props.row.brand.logopath" alt="Foto de la marca" />
-                </q-avatar>
-                <q-avatar v-else color="primary" text-color="white">
-                  {{ props.row.name.charAt(0).toUpperCase()
-                  }}{{ props.row.name.charAt(1).toUpperCase() }}
-                </q-avatar>
-              </q-item-section>
-              <q-item-section avatar>
-                {{ props.row.brand?.name }}
-              </q-item-section>
-            </q-item>
+            {{ props.row.status.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-origin="props">
+          <q-td>
+            {{ props.row.origin.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-percentage="props">
+          <q-td>
+            <q-linear-progress
+              size="25px"
+              :value="getNumber(props.row.lastPercentage.name).number"
+              :color="getNumber(props.row.lastPercentage.name).color"
+              style="border-radius: 10px"
+            >
+              <q-tooltip class="bg-primary text-h6">
+                {{ props.row.lastPercentage.name }}
+              </q-tooltip>
+              <div class="absolute-full flex flex-center">
+                <q-badge
+                  color="white"
+                  text-color="accent"
+                  :label="getNumber(props.row.lastPercentage.name).label"
+                />
+              </div>
+            </q-linear-progress>
           </q-td>
         </template>
       </q-table>
@@ -137,11 +120,12 @@
     transition-show="slide-up"
     transition-hide="slide-down"
     persistent
+    maximized
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
-          <q-item-label class="text-h6">Agregar</q-item-label>
+          <q-item-label class="text-h6">Crear seguimiento</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-btn label="Cerrar" color="red" v-close-popup />
@@ -153,14 +137,14 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <vehicle-form ref="add" />
+          <follow-up-form ref="add" />
         </q-item-section>
       </q-item>
     </q-card>
   </q-dialog>
 
   <q-dialog v-model="showFilters" position="top" full-width>
-    <q-card style="width: 900px">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Filtros</q-item-label>
@@ -194,7 +178,7 @@
           <q-input
             outlined
             dense
-            label="Buscar por nombre, sku o descripcion"
+            label="Buscar por titulo"
             v-model="filterForm.search"
             @update:model-value="onInputChange"
           >
@@ -206,28 +190,10 @@
       </q-item>
       <q-item>
         <q-item-section>
-          <q-toggle
-            toggle-indeterminate
-            v-model="filterForm.active"
-            label="Activo"
-            color="primary"
-          />
-        </q-item-section>
-        <q-item-section>
-          <q-toggle
-            toggle-indeterminate
-            v-model="filterForm.featured"
-            label="Destacado"
-            color="primary"
-          />
-        </q-item-section>
-      </q-item>
-      <q-item>
-        <q-item-section>
           <q-select
-            v-model="filterForm.type_id"
-            :options="types"
-            label="Tipo"
+            v-model="filterForm.customer_id"
+            :options="filterCustomers"
+            label="Cliente"
             option-value="id"
             option-label="name"
             option-disable="inactive"
@@ -235,17 +201,85 @@
             map-options
             transition-show="jump-up"
             transition-hide="jump-up"
-            clearable
             outlined
             dense
+            clearable
+            options-dense
+            use-input
+            @filter="filterFn"
+            input-debounce="0"
+            behavior="menu"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey"> No results </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.employee_id"
+            :options="employees"
+            label="Empleado"
+            option-value="id"
+            options-dense
+            option-label="fullName"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+          />
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.status_id"
+            :options="statuses"
+            label="Estatus"
+            option-value="id"
+            options-dense
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
           />
         </q-item-section>
         <q-item-section>
           <q-select
-            v-model="filterForm.brand_id"
-            :options="brands"
-            label="Marca"
+            v-model="filterForm.vehicle_id"
+            :options="vehicles"
+            label="Vehiculos"
             option-value="id"
+            options-dense
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-select
+            v-model="filterForm.origin_id"
+            :options="origins"
+            label="Origen"
+            option-value="id"
+            options-dense
             option-label="name"
             option-disable="inactive"
             emit-value
@@ -268,21 +302,18 @@
     persistent
     maximized
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
-          <q-item-label class="text-h6">{{ selectedItem.name }}</q-item-label>
+          <q-item-label class="text-h6">{{ selectedItem.title }}</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-btn label="Cerrar" color="red" v-close-popup @click="getRows" />
         </q-item-section>
       </q-item>
       <q-separator />
-      <q-item>
-        <q-item-section>
-          <vehicle-all-form ref="edit" :vehicle="selectedItem" />
-        </q-item-section>
-      </q-item>
+
+      <follow-up-all-form ref="edit" :followUp="selectedItem" />
     </q-card>
   </q-dialog>
 </template>
@@ -290,10 +321,10 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
-import { checkPosition } from "src/boot/checks";
+import { getNumber } from "src/boot/followUp";
 
-import VehicleForm from "src/components/Vehicle/VehicleForm.vue";
-import VehicleAllForm from "src/components/Vehicle/VehicleAllForm.vue";
+import FollowUpForm from "src/components/FollowUp/FollowUpForm.vue";
+import FollowUpAllForm from "src/components/FollowUp/FollowUpAllForm.vue";
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -310,14 +341,19 @@ const current_page = ref(1);
 
 const filterForm = ref({
   search: null,
-  type_id: null,
-  brand_id: null,
-  active: null,
-  featured: null,
+  customer_id: null,
+  employee_id: null,
+  vehicle_id: null,
+  status_id: null,
+  origin_id: null,
 });
 
-const types = ref([]);
-const brands = ref([]);
+const customers = ref([]);
+const employees = ref([]);
+const vehicles = ref([]);
+const statuses = ref([]);
+const origins = ref([]);
+const percentages = ref([]);
 
 const columns = [
   {
@@ -327,59 +363,59 @@ const columns = [
     label: "detalle",
   },
   {
-    name: "sku",
-    label: "# unico",
+    name: "title",
+    label: "Modelos o nombre del protecto",
     align: "left",
-    field: "sku",
+    field: "title",
     sortable: true,
   },
   {
-    name: "name",
-    label: "Nombre",
+    name: "date",
+    label: "Fecha",
     align: "left",
-    field: "name",
-    sortable: true,
-  },
-  // {
-  //   name: "description",
-  //   label: "Descripcion",
-  //   align: "left",
-  //   field: "description",
-  //   sortable: true,
-  // },
-  {
-    name: "quantity",
-    label: "Cantidad",
-    align: "left",
-    field: "quantity",
+    field: "date",
     sortable: true,
   },
   {
-    name: "active",
-    label: "Estado",
+    name: "customer",
+    label: "Cliente",
     align: "left",
-    field: "active",
+    field: "customer",
     sortable: true,
   },
   {
-    name: "featured",
-    label: "Destacado",
+    name: "employee",
+    label: "Empleado",
     align: "left",
-    field: "featured",
+    field: "employee",
     sortable: true,
   },
   {
-    name: "type",
-    label: "Tipo",
+    name: "vehicle",
+    label: "Vehiculo",
     align: "left",
-    field: "type",
+    field: "vehicle",
     sortable: true,
   },
   {
-    name: "brand",
-    label: "Marca",
+    name: "status",
+    label: "Estatus",
     align: "left",
-    field: "brand",
+    field: "status",
+    sortable: true,
+  },
+  {
+    name: "origin",
+    label: "Origen",
+    align: "left",
+    field: "origin",
+    sortable: true,
+  },
+  {
+    name: "percentage",
+    label: "Porcentaje de certeza",
+    align: "left",
+    field: "percentage",
     sortable: true,
   },
 ];
@@ -391,18 +427,28 @@ const openEdit = (item) => {
 
 const clearFilters = () => {
   filterForm.value.search = null;
-  filterForm.value.type_id = null;
-  filterForm.value.brand_id = null;
-  filterForm.value.active = null;
-  filterForm.value.featured = null;
+  filterForm.value.customer_id = null;
+  filterForm.value.employee_id = null;
+  filterForm.value.inventory_id = null;
+  filterForm.value.status_id = null;
+  filterForm.value.origin_id = null;
   current_page.value = 1;
   getRows();
 };
 
 const getOptions = async () => {
-  let res = await sendRequest("GET", null, "/api/intranet/vehicle/options", "");
-  types.value = res.types;
-  brands.value = res.brands;
+  let res = await sendRequest(
+    "GET",
+    null,
+    "/api/intranet/followUp/options",
+    ""
+  );
+  customers.value = res.customers;
+  employees.value = res.employees;
+  vehicles.value = res.vehicles;
+  statuses.value = res.statuses;
+  origins.value = res.origins;
+  percentages.value = res.percentages;
 };
 
 const getRows = async (page = 1) => {
@@ -413,7 +459,7 @@ const getRows = async (page = 1) => {
     ...filterForm.value,
     ...current,
   };
-  let res = await sendRequest("POST", final, "/api/intranet/vehicles", "");
+  let res = await sendRequest("POST", final, "/api/intranet/followUps", "");
   rows.value = res.data;
   filterForm.value.page = res.current_page;
   next_page_url.value = res.next_page_url;
@@ -428,9 +474,10 @@ const postItem = async () => {
     return;
   }
   const final = {
-    ...add.value.formVehicle,
+    ...add.value.formFollowUp,
   };
-  let res = await sendRequest("POST", final, "/api/intranet/vehicle", "");
+
+  let res = await sendRequest("POST", final, "/api/intranet/followUp", "");
   showAdd.value = false;
   selectedItem.value = res;
   showEdit.value = true;
@@ -454,6 +501,24 @@ onMounted(() => {
   getRows();
   getOptions();
 });
+
+const filterCustomers = ref(null);
+
+function filterFn(val, update) {
+  if (val == "") {
+    update(() => {
+      filterCustomers.value = customers.value;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    filterCustomers.value = customers.value.filter(
+      (customer) => customer.name.toLowerCase().indexOf(needle) > -1
+    );
+  });
+}
 </script>
 
 <style scoped>

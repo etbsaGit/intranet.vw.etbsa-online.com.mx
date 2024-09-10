@@ -27,7 +27,7 @@
           <q-item-section>
             <q-item-label class="text-h6"> Informacion general </q-item-label>
           </q-item-section>
-          <q-item-section side>
+          <q-item-section side v-if="checkPosition('Gerente')">
             <q-btn label="Guardar" color="blue" @click="putItem" />
           </q-item-section>
         </q-item>
@@ -68,6 +68,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 import VehicleForm from "src/components/Vehicle/VehicleForm.vue";
 import VehicleFeatureIndex from "src/components/VehicleFeature/VehicleFeatureIndex.vue";

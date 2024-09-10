@@ -1,5 +1,5 @@
 <template>
-  <q-item>
+  <q-item v-if="checkPosition('Gerente')">
     <q-btn
       dense
       label="Agregar caracteristica"
@@ -45,6 +45,7 @@
                 flat
                 icon="edit_square"
                 @click="openEdit(feature)"
+                v-if="checkPosition('Gerente')"
               />
             </q-item-section>
             <q-item-section>
@@ -120,6 +121,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 import VehicleFeatureForm from "./VehicleFeatureForm.vue";
 

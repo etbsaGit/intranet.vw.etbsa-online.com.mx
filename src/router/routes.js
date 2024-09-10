@@ -48,6 +48,10 @@ const routes = [
         path: "/profile",
         component: () => import("src/pages/Employee/ProfilePage.vue"),
       },
+      {
+        path: "/follow",
+        component: () => import("src/pages/FollowUp/FollowUpPage.vue"),
+      },
     ],
   },
   {

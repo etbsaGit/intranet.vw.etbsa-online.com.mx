@@ -1,5 +1,5 @@
 <template>
-  <q-item>
+  <q-item v-if="checkPosition('Gerente')">
     <q-btn
       dense
       label="Agregar archivo"
@@ -90,6 +90,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 import VehicleDocForm from "src/components/VehicleDoc/VehicleDocForm.vue";
 import VehicleDocCard from "src/components/VehicleDoc/VehicleDocCard.vue";
@@ -104,8 +105,12 @@ const showEdit = ref(false);
 const edit = ref(null);
 
 const openEdit = (item) => {
-  selectedItem.value = item;
-  showEdit.value = true;
+  if (checkPosition("Gerente")) {
+    selectedItem.value = item;
+    showEdit.value = true;
+  } else {
+    window.open(item.realpath, "_blank");
+  }
 };
 
 const getRows = async (id) => {
