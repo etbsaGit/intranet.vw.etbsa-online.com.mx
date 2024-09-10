@@ -65,6 +65,52 @@
             />
           </q-td>
         </template>
+        <template v-slot:body-cell-customer="props">
+          <q-td>
+            {{ props.row.customer.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-employee="props">
+          <q-td>
+            {{ props.row.employee.shortName }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-vehicle="props">
+          <q-td>
+            {{ props.row.lastVehicle?.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-status="props">
+          <q-td>
+            {{ props.row.status.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-origin="props">
+          <q-td>
+            {{ props.row.origin.name }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-percentage="props">
+          <q-td>
+            <q-linear-progress
+              size="25px"
+              :value="getNumber(props.row.lastPercentage.name).number"
+              :color="getNumber(props.row.lastPercentage.name).color"
+              style="border-radius: 10px"
+            >
+              <q-tooltip class="bg-primary text-h6">
+                {{ props.row.lastPercentage.name }}
+              </q-tooltip>
+              <div class="absolute-full flex flex-center">
+                <q-badge
+                  color="white"
+                  text-color="accent"
+                  :label="getNumber(props.row.lastPercentage.name).label"
+                />
+              </div>
+            </q-linear-progress>
+          </q-td>
+        </template>
       </q-table>
     </q-item-section>
   </q-item>
@@ -146,7 +192,7 @@
         <q-item-section>
           <q-select
             v-model="filterForm.customer_id"
-            :options="customers"
+            :options="filterCustomers"
             label="Cliente"
             option-value="id"
             option-label="name"
@@ -158,7 +204,18 @@
             outlined
             dense
             clearable
-          />
+            options-dense
+            use-input
+            @filter="filterFn"
+            input-debounce="0"
+            behavior="menu"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey"> No results </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
         </q-item-section>
         <q-item-section>
           <q-select
@@ -166,6 +223,7 @@
             :options="employees"
             label="Empleado"
             option-value="id"
+            options-dense
             option-label="fullName"
             option-disable="inactive"
             emit-value
@@ -185,6 +243,7 @@
             :options="statuses"
             label="Estatus"
             option-value="id"
+            options-dense
             option-label="name"
             option-disable="inactive"
             emit-value
@@ -198,11 +257,12 @@
         </q-item-section>
         <q-item-section>
           <q-select
-            v-model="filterForm.inventory_id"
-            :options="inventories"
-            label="Articulo"
+            v-model="filterForm.vehicle_id"
+            :options="vehicles"
+            label="Vehiculos"
             option-value="id"
-            option-label="model"
+            options-dense
+            option-label="name"
             option-disable="inactive"
             emit-value
             map-options
@@ -219,6 +279,7 @@
             :options="origins"
             label="Origen"
             option-value="id"
+            options-dense
             option-label="name"
             option-disable="inactive"
             emit-value
@@ -241,23 +302,18 @@
     persistent
     maximized
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
-          <q-item-label class="text-h6">{{
-            selectedItem.serial_number
-          }}</q-item-label>
+          <q-item-label class="text-h6">{{ selectedItem.title }}</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-btn label="Cerrar" color="red" v-close-popup @click="getRows" />
         </q-item-section>
       </q-item>
       <q-separator />
-      <q-item>
-        <q-item-section>
-          <follow-up-all-form ref="edit" :followUp="selectedItem" />
-        </q-item-section>
-      </q-item>
+
+      <follow-up-all-form ref="edit" :followUp="selectedItem" />
     </q-card>
   </q-dialog>
 </template>
@@ -265,6 +321,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { getNumber } from "src/boot/followUp";
 
 import FollowUpForm from "src/components/FollowUp/FollowUpForm.vue";
 import FollowUpAllForm from "src/components/FollowUp/FollowUpAllForm.vue";
@@ -286,14 +343,14 @@ const filterForm = ref({
   search: null,
   customer_id: null,
   employee_id: null,
-  inventory_id: null,
+  vehicle_id: null,
   status_id: null,
   origin_id: null,
 });
 
 const customers = ref([]);
 const employees = ref([]);
-const inventories = ref([]);
+const vehicles = ref([]);
 const statuses = ref([]);
 const origins = ref([]);
 const percentages = ref([]);
@@ -307,7 +364,7 @@ const columns = [
   },
   {
     name: "title",
-    label: "Titulo",
+    label: "Modelos o nombre del protecto",
     align: "left",
     field: "title",
     sortable: true,
@@ -334,10 +391,10 @@ const columns = [
     sortable: true,
   },
   {
-    name: "inventory",
-    label: "Articulo",
+    name: "vehicle",
+    label: "Vehiculo",
     align: "left",
-    field: "inventory",
+    field: "vehicle",
     sortable: true,
   },
   {
@@ -356,7 +413,7 @@ const columns = [
   },
   {
     name: "percentage",
-    label: "Porcentaje de aceptacion",
+    label: "Porcentaje de certeza",
     align: "left",
     field: "percentage",
     sortable: true,
@@ -371,10 +428,10 @@ const openEdit = (item) => {
 const clearFilters = () => {
   filterForm.value.search = null;
   filterForm.value.customer_id = null;
-  filterForm.value.employee_id = ull;
-  filterForm.value.inventory_id = nll;
-  filterForm.value.status_id = nul;
-  filterForm.value.origin_id = nul;
+  filterForm.value.employee_id = null;
+  filterForm.value.inventory_id = null;
+  filterForm.value.status_id = null;
+  filterForm.value.origin_id = null;
   current_page.value = 1;
   getRows();
 };
@@ -388,7 +445,7 @@ const getOptions = async () => {
   );
   customers.value = res.customers;
   employees.value = res.employees;
-  inventories.value = res.inventories;
+  vehicles.value = res.vehicles;
   statuses.value = res.statuses;
   origins.value = res.origins;
   percentages.value = res.percentages;
@@ -419,12 +476,11 @@ const postItem = async () => {
   const final = {
     ...add.value.formFollowUp,
   };
-  console.log(final);
 
-  // let res = await sendRequest("POST", final, "/api/intranet/followUp", "");
-  // showAdd.value = false;
-  // selectedItem.value = res;
-  // showEdit.value = true;
+  let res = await sendRequest("POST", final, "/api/intranet/followUp", "");
+  showAdd.value = false;
+  selectedItem.value = res;
+  showEdit.value = true;
 };
 
 watch(current_page, (newPage) => {
@@ -445,6 +501,24 @@ onMounted(() => {
   getRows();
   getOptions();
 });
+
+const filterCustomers = ref(null);
+
+function filterFn(val, update) {
+  if (val == "") {
+    update(() => {
+      filterCustomers.value = customers.value;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    filterCustomers.value = customers.value.filter(
+      (customer) => customer.name.toLowerCase().indexOf(needle) > -1
+    );
+  });
+}
 </script>
 
 <style scoped>

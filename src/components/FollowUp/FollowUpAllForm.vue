@@ -1,1 +1,223 @@
-<template>aqui el menu para editar allform</template>
+<template>
+  <q-splitter v-if="currentItem" v-model="splitterModel" style="height: 93vh">
+    <template v-slot:before>
+      <q-item>
+        <q-item-section>
+          <follow-up-card :followUp="currentItem" />
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <customer-card :customer="currentItem.customer" />
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <employee-card :employee="currentItem.employee" />
+        </q-item-section>
+      </q-item>
+    </template>
+
+    <template v-slot:after>
+      <q-item
+        v-if="
+          currentItem.status.name != 'Venta perdida' || checkPosition('Gerente')
+        "
+      >
+        <q-item-section v-if="currentItem.children.length >= 3">
+          <q-btn
+            dense
+            outline
+            label="Venta ganada"
+            color="green-10"
+            icon="fas fa-circle-dollar-to-slot"
+            @click="saleWin"
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-btn
+            dense
+            outline
+            label="Venta perdida"
+            color="red-10"
+            icon="far fa-thumbs-down"
+            @click="saleLost"
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-btn
+            dense
+            outline
+            label="Agregar actividad"
+            color="primary"
+            icon="add_circle"
+            @click="addFollowUp = true"
+          />
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <follow-up-menu :followUp="currentItem" />
+        </q-item-section>
+      </q-item>
+    </template>
+  </q-splitter>
+
+  <q-dialog
+    v-model="addFeedback"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    persistent
+  >
+    <q-card>
+      <q-item class="text-white bg-primary">
+        <q-item-section>
+          <q-item-label class="text-h6">Agregar retroalimentacion</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Cerrar" color="red" v-close-popup />
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Agregar" color="blue" @click="putFeedBack" />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item>
+        <q-item-section>
+          <feedback-form ref="add" :followUp="children" />
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog
+    v-model="addFollowUp"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    persistent
+  >
+    <q-card>
+      <q-item class="text-white bg-primary">
+        <q-item-section>
+          <q-item-label class="text-h6">
+            Agregar proximo seguimiento
+          </q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Cerrar" color="red" v-close-popup />
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Agregar" color="blue" @click="postNext" />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item>
+        <q-item-section>
+          <follow-up-next-form ref="next" :followUp="followUp" />
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script setup>
+import { ref, onMounted, inject } from "vue";
+import { useQuasar } from "quasar";
+import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
+
+import CustomerCard from "src/components/FollowUp/CustomerCard.vue";
+import EmployeeCard from "src/components/FollowUp/EmployeeCard.vue";
+import FollowUpMenu from "src/components/FollowUp/FollowUpMenu.vue";
+import FollowUpCard from "src/components/FollowUp/FollowUpCard.vue";
+import FollowUpNextForm from "src/components/FollowUp/FollowUpNextForm.vue";
+import FeedbackForm from "src/components/FollowUp/FeedbackForm.vue";
+
+const { followUp } = defineProps(["followUp"]);
+
+const bus = inject("bus");
+
+const $q = useQuasar();
+
+const splitterModel = ref(50);
+const currentItem = ref(null);
+const addFeedback = ref(false);
+const add = ref(null);
+const addFollowUp = ref(false);
+const next = ref(null);
+const children = ref(null);
+
+bus.on("open-feedback", (item) => {
+  children.value = item;
+  addFeedback.value = true;
+});
+
+const getItem = async (id) => {
+  let res = await sendRequest("GET", null, "/api/intranet/followUp/" + id, "");
+  currentItem.value = res;
+};
+
+const putFeedBack = async () => {
+  const add_valid = await add.value.validate();
+  if (!add_valid) {
+    notifyIncomplete();
+    return;
+  }
+  const final = {
+    ...add.value.formFeedback,
+  };
+
+  let res = await sendRequest(
+    "PUT",
+    final,
+    "/api/intranet/followUp/" + final.id,
+    ""
+  );
+  addFeedback.value = false;
+  getItem(followUp.id);
+};
+
+const postNext = async () => {
+  const next_valid = await next.value.validate();
+  if (!next_valid) {
+    notifyIncomplete();
+    return;
+  }
+  const final = {
+    ...next.value.formFollowUp,
+  };
+
+  let res = await sendRequest(
+    "POST",
+    final,
+    "/api/intranet/followUp/next/" + followUp.id,
+    ""
+  );
+  addFollowUp.value = false;
+  getItem(followUp.id);
+};
+
+const saleLost = async () => {
+  let res = await sendRequest(
+    "GET",
+    null,
+    "/api/intranet/followUp/lost/" + followUp.id,
+    ""
+  );
+  getItem(followUp.id);
+};
+
+const saleWin = async () => {
+  let res = await sendRequest(
+    "GET",
+    null,
+    "/api/intranet/followUp/win/" + followUp.id,
+    ""
+  );
+  getItem(followUp.id);
+};
+
+onMounted(() => {
+  getItem(followUp.id);
+});
+</script>

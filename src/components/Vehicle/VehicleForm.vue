@@ -5,6 +5,7 @@
         <q-input
           v-model="formVehicle.sku"
           filled
+          :readonly="!checkPosition('Gerente')"
           dense
           label="# unico"
           lazy-rules
@@ -16,6 +17,7 @@
         <q-input
           v-model="formVehicle.name"
           filled
+          :readonly="!checkPosition('Gerente')"
           dense
           label="Nombre"
           lazy-rules
@@ -29,6 +31,7 @@
         <q-input
           v-model="formVehicle.description"
           filled
+          :readonly="!checkPosition('Gerente')"
           dense
           label="Descripcion"
           lazy-rules
@@ -52,6 +55,7 @@
           transition-show="jump-up"
           transition-hide="jump-up"
           filled
+          :readonly="!checkPosition('Gerente')"
           dense
           clearable
           :rules="[(val) => val !== null || 'Obligatorio']"
@@ -70,6 +74,7 @@
           transition-show="jump-up"
           transition-hide="jump-up"
           filled
+          :readonly="!checkPosition('Gerente')"
           dense
           clearable
           :rules="[(val) => val !== null || 'Obligatorio']"
@@ -85,6 +90,7 @@
           color="primary"
           :false-value="0"
           :true-value="1"
+          :disable="!checkPosition('Gerente')"
         />
       </q-item-section>
       <q-item-section>
@@ -95,6 +101,7 @@
           color="primary"
           :false-value="0"
           :true-value="1"
+          :disable="!checkPosition('Gerente')"
         />
       </q-item-section>
     </q-item>
@@ -104,6 +111,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 const { vehicle } = defineProps(["vehicle"]);
 

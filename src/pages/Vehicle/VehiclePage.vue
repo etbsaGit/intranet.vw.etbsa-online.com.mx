@@ -13,7 +13,7 @@
       >
         <template v-slot:top-left>
           <q-item>
-            <q-item-section>
+            <q-item-section v-if="checkPosition('Gerente')">
               <q-btn
                 dense
                 outline
@@ -290,6 +290,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 import VehicleForm from "src/components/Vehicle/VehicleForm.vue";
 import VehicleAllForm from "src/components/Vehicle/VehicleAllForm.vue";

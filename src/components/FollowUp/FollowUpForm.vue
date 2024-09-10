@@ -12,9 +12,10 @@
         <q-item-section>
           <q-select
             v-model="formFollowUp.customer_id"
-            :options="customers"
+            :options="filterCustomers"
             label="Cliente"
             option-value="id"
+            options-dense
             option-label="name"
             option-disable="inactive"
             emit-value
@@ -25,7 +26,16 @@
             dense
             clearable
             :rules="[(val) => val !== null || 'Obligatorio']"
+            use-input
+            @filter="filterFn"
+            input-debounce="0"
+            behavior="menu"
           >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey"> No results </q-item-section>
+              </q-item>
+            </template>
             <template v-slot:after>
               <q-btn
                 outline
@@ -60,11 +70,12 @@
         </q-item-section>
         <q-item-section>
           <q-select
-            v-model="formFollowUp.inventory_id"
-            :options="inventories"
-            label="Articulo del inventario en especifico"
+            v-model="formFollowUp.vehicle_id"
+            :options="vehicles"
+            label="Modelo de interes"
             option-value="id"
-            option-label="model"
+            options-dense
+            option-label="name"
             option-disable="inactive"
             emit-value
             map-options
@@ -80,28 +91,11 @@
       <q-item>
         <q-item-section>
           <q-select
-            v-model="formFollowUp.status_id"
-            :options="statuses"
-            label="Estatus"
-            option-value="id"
-            option-label="name"
-            option-disable="inactive"
-            emit-value
-            map-options
-            transition-show="jump-up"
-            transition-hide="jump-up"
-            outlined
-            dense
-            clearable
-            :rules="[(val) => val !== null || 'Obligatorio']"
-          />
-        </q-item-section>
-        <q-item-section>
-          <q-select
             v-model="formFollowUp.origin_id"
             :options="origins"
             label="Origen"
             option-value="id"
+            options-dense
             option-label="name"
             option-disable="inactive"
             emit-value
@@ -120,6 +114,7 @@
             :options="percentages"
             label="Certeza"
             option-value="id"
+            options-dense
             option-label="name"
             option-disable="inactive"
             emit-value
@@ -141,12 +136,12 @@
             dense
             label="Comentarios"
             lazy-rules
-            hint
+            :rules="[(val) => val !== null || 'Obligatorio']"
           />
         </q-item-section>
       </q-item>
     </q-card>
-    <q-card class="card">
+    <q-card class="card" v-if="!followUp">
       <q-card-section horizontal>
         <q-card-section class="col-6">
           <q-item>
@@ -163,6 +158,7 @@
                 :options="employees"
                 label="Selecciona un vendedor"
                 option-value="id"
+                options-dense
                 option-label="fullName"
                 option-disable="inactive"
                 emit-value
@@ -172,6 +168,7 @@
                 outlined
                 dense
                 clearable
+                :disable="!checkPosition('Gerente')"
                 :rules="[(val) => val !== null || 'Obligatorio']"
               />
             </q-item-section>
@@ -206,8 +203,8 @@
                     >
                       <q-date
                         v-model="formFollowUp.next_follow.date"
-                        mask="YYYY-MM-DD"
                         minimal
+                        :options="dateOptions"
                       >
                         <div class="row items-center justify-end">
                           <q-btn
@@ -229,6 +226,7 @@
                 :options="percentages"
                 label="Certeza"
                 option-value="id"
+                options-dense
                 option-label="name"
                 option-disable="inactive"
                 emit-value
@@ -250,7 +248,7 @@
                 dense
                 label="Comentarios"
                 lazy-rules
-                hint
+                :rules="[(val) => val !== null || 'Obligatorio']"
               />
             </q-item-section>
           </q-item>
@@ -292,6 +290,7 @@ import { ref, onMounted, computed } from "vue";
 import { date } from "quasar";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { useAuthStore } from "src/stores/auth";
+import { checkPosition } from "src/boot/checks";
 
 import CustomerForm from "src/components/Customer/CustomerForm.vue";
 
@@ -299,7 +298,11 @@ const authStore = useAuthStore();
 const usuario = authStore.authUser;
 
 const timeStamp = Date.now();
-const formattedString = date.formatDate(timeStamp, "YYYY-MM-DD");
+const today = date.formatDate(timeStamp, "YYYY/MM/DD");
+
+function dateOptions(date) {
+  return date >= today;
+}
 
 const showAdd = ref(false);
 const add = ref(null);
@@ -323,8 +326,7 @@ const { followUp } = defineProps(["followUp"]);
 
 const customers = ref([]);
 const employees = ref([]);
-const inventories = ref([]);
-const statuses = ref([]);
+const vehicles = ref([]);
 const origins = ref([]);
 const percentages = ref([]);
 
@@ -332,12 +334,11 @@ const myForm = ref(null);
 
 const formFollowUp = ref({
   title: followUp ? followUp.title : null,
-  date: followUp ? followUp.date : formattedString,
+  date: followUp ? followUp.date : today,
   comments: followUp ? followUp.comments : null,
   customer_id: followUp ? followUp.customer_id : null,
   employee_id: followUp ? followUp.employee_id : usuario.employee?.id,
-  inventory_id: followUp ? followUp.inventory_id : null,
-  status_id: followUp ? followUp.status_id : null,
+  vehicle_id: followUp ? followUp.vehicle_id : null,
   origin_id: followUp ? followUp.origin_id : null,
   percentage_id: followUp ? followUp.percentage_id : null,
   follow_up_id: followUp ? followUp.follow_up_id : null,
@@ -357,11 +358,28 @@ const getOptions = async () => {
   );
   customers.value = res.customers;
   employees.value = res.employees;
-  inventories.value = res.inventories;
-  statuses.value = res.statuses;
+  vehicles.value = res.vehicles;
   origins.value = res.origins;
   percentages.value = res.percentages;
 };
+
+const filterCustomers = ref(null);
+
+function filterFn(val, update) {
+  if (val == "") {
+    update(() => {
+      filterCustomers.value = customers.value;
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    filterCustomers.value = customers.value.filter(
+      (customer) => customer.name.toLowerCase().indexOf(needle) > -1
+    );
+  });
+}
 
 const validate = async () => {
   return await myForm.value.validate();

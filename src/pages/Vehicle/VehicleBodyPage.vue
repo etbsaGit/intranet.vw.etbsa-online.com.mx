@@ -1,5 +1,5 @@
 <template>
-  <q-item>
+  <q-item v-if="checkPosition('Gerente')">
     <q-btn
       dense
       label="Agregar Carroceria"
@@ -30,6 +30,7 @@
                   flat
                   icon="edit_square"
                   @click="openEdit(props.row)"
+                  v-if="checkPosition('Gerente')"
                 />
               </q-item-section>
               <q-item-section avatar>
@@ -108,6 +109,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { checkPosition } from "src/boot/checks";
 
 import VehicleBodyForm from "src/components/Vehicle/VehicleBodyForm.vue";
 

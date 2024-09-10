@@ -36,7 +36,7 @@
       active-class="my-menu-link"
     >
       <q-item-section avatar>
-        <q-icon name="connect_without_contact" />
+        <q-icon name="fas fa-comments-dollar" />
       </q-item-section>
 
       <q-item-section>Seguimientos</q-item-section>
@@ -48,6 +48,7 @@
       :active="link === 'sale'"
       @click="link = 'sale'"
       active-class="my-menu-link"
+      v-if="checkPosition('Gerente')"
     >
       <q-item-section avatar>
         <q-icon name="request_quote" />
