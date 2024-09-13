@@ -44,6 +44,20 @@
     <q-item
       clickable
       v-ripple
+      to="/followCalendar"
+      :active="link === 'followCalendar'"
+      @click="link = 'followCalendar'"
+      active-class="my-menu-link"
+    >
+      <q-item-section avatar>
+        <q-icon name="far fa-calendar-days" />
+      </q-item-section>
+
+      <q-item-section>Calendario de seguimientos</q-item-section>
+    </q-item>
+    <q-item
+      clickable
+      v-ripple
       to="/sale"
       :active="link === 'sale'"
       @click="link = 'sale'"

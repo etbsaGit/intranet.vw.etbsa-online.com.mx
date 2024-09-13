@@ -52,6 +52,10 @@ const routes = [
         path: "/follow",
         component: () => import("src/pages/FollowUp/FollowUpPage.vue"),
       },
+      {
+        path: "/followCalendar",
+        component: () => import("src/pages/FollowUp/FollowUpCalendar.vue"),
+      },
     ],
   },
   {

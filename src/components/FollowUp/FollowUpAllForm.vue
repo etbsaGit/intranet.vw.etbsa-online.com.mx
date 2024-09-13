@@ -24,8 +24,19 @@
           currentItem.status.name != 'Venta perdida' || checkPosition('Gerente')
         "
       >
+        <q-item-section v-if="checkPosition('Gerente')">
+          <q-btn
+            dense
+            outline
+            label="Activar"
+            color="blue-10"
+            icon="fas fa-person-walking-arrow-right"
+            @click="saleActive"
+          />
+        </q-item-section>
         <q-item-section v-if="currentItem.children.length >= 3">
           <q-btn
+            v-if="hasNullFeedback(currentItem.children)"
             dense
             outline
             label="Venta ganada"
@@ -36,6 +47,7 @@
         </q-item-section>
         <q-item-section>
           <q-btn
+            v-if="hasNullFeedback(currentItem.children)"
             dense
             outline
             label="Venta perdida"
@@ -46,9 +58,10 @@
         </q-item-section>
         <q-item-section>
           <q-btn
+            v-if="hasNullFeedback(currentItem.children)"
             dense
             outline
-            label="Agregar actividad"
+            label="Agregar"
             color="primary"
             icon="add_circle"
             @click="addFollowUp = true"
@@ -113,7 +126,7 @@
       <q-separator />
       <q-item>
         <q-item-section>
-          <follow-up-next-form ref="next" :followUp="followUp" />
+          <follow-up-next-form ref="next" :followUp="currentItem" />
         </q-item-section>
       </q-item>
     </q-card>
@@ -190,34 +203,49 @@ const postNext = async () => {
   let res = await sendRequest(
     "POST",
     final,
-    "/api/intranet/followUp/next/" + followUp.id,
+    "/api/intranet/followUp/next/" + currentItem.value.id,
     ""
   );
   addFollowUp.value = false;
-  getItem(followUp.id);
+  getItem(currentItem.value.id);
 };
 
 const saleLost = async () => {
   let res = await sendRequest(
     "GET",
     null,
-    "/api/intranet/followUp/lost/" + followUp.id,
+    "/api/intranet/followUp/lost/" + currentItem.value.id,
     ""
   );
-  getItem(followUp.id);
+  getItem(currentItem.value.id);
 };
 
 const saleWin = async () => {
   let res = await sendRequest(
     "GET",
     null,
-    "/api/intranet/followUp/win/" + followUp.id,
+    "/api/intranet/followUp/win/" + currentItem.value.id,
     ""
   );
-  getItem(followUp.id);
+  getItem(currentItem.value.id);
 };
 
+const saleActive = async () => {
+  let res = await sendRequest(
+    "GET",
+    null,
+    "/api/intranet/followUp/active/" + currentItem.value.id,
+    ""
+  );
+  getItem(currentItem.value.id);
+};
+
+function hasNullFeedback(array) {
+  // Verifica si alguno de los objetos en el array tiene feedback nulo
+  return !array.some((item) => item.feedback === null);
+}
+
 onMounted(() => {
-  getItem(followUp.id);
+  getItem(followUp.follow_up_id ? followUp.follow_up_id : followUp.id);
 });
 </script>

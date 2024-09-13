@@ -111,6 +111,16 @@
             </q-linear-progress>
           </q-td>
         </template>
+        <template v-slot:body-cell-date="props">
+          <q-td>
+            <q-chip
+              text-color="white"
+              :color="getColor(props.row.daysRemaining).color"
+            >
+              {{ getColor(props.row.daysRemaining).label }}
+            </q-chip>
+          </q-td>
+        </template>
       </q-table>
     </q-item-section>
   </q-item>
@@ -322,6 +332,7 @@
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { getNumber } from "src/boot/followUp";
+import { formatDate } from "src/boot/format";
 
 import FollowUpForm from "src/components/FollowUp/FollowUpForm.vue";
 import FollowUpAllForm from "src/components/FollowUp/FollowUpAllForm.vue";
@@ -371,7 +382,7 @@ const columns = [
   },
   {
     name: "date",
-    label: "Fecha",
+    label: "Proximo contacto en:",
     align: "left",
     field: "date",
     sortable: true,
@@ -404,13 +415,13 @@ const columns = [
     field: "status",
     sortable: true,
   },
-  {
-    name: "origin",
-    label: "Origen",
-    align: "left",
-    field: "origin",
-    sortable: true,
-  },
+  // {
+  //   name: "origin",
+  //   label: "Origen",
+  //   align: "left",
+  //   field: "origin",
+  //   sortable: true,
+  // },
   {
     name: "percentage",
     label: "Porcentaje de certeza",
@@ -518,6 +529,28 @@ function filterFn(val, update) {
       (customer) => customer.name.toLowerCase().indexOf(needle) > -1
     );
   });
+}
+
+function getColor(daysRemaining) {
+  let label;
+  let color;
+
+  if (daysRemaining < 0) {
+    label = daysRemaining + " días";
+    color = "red-10";
+  } else if (daysRemaining === 0) {
+    label = "Hoy";
+    color = "orange-10";
+  } else if (daysRemaining > 0) {
+    label = daysRemaining + " días";
+    color = "green-10";
+  } else {
+    // Aunque no debería llegar aquí con las condiciones anteriores, se incluye para cubrir todos los casos posibles.
+    label = "Finalizado";
+    color = "grey-7";
+  }
+
+  return { label, color };
 }
 </script>
 
