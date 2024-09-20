@@ -26,6 +26,7 @@
       >
         <q-item-section v-if="checkPosition('Gerente')">
           <q-btn
+            v-if="currentItem.status.name != 'Activo'"
             dense
             outline
             label="Activar"
@@ -36,7 +37,10 @@
         </q-item-section>
         <q-item-section v-if="currentItem.children.length >= 3">
           <q-btn
-            v-if="hasNullFeedback(currentItem.children)"
+            v-if="
+              hasNullFeedback(currentItem.children) &&
+              currentItem.status.name == 'Activo'
+            "
             dense
             outline
             label="Venta ganada"
@@ -47,13 +51,16 @@
         </q-item-section>
         <q-item-section>
           <q-btn
-            v-if="hasNullFeedback(currentItem.children)"
+            v-if="
+              hasNullFeedback(currentItem.children) &&
+              currentItem.status.name == 'Activo'
+            "
             dense
             outline
             label="Venta perdida"
             color="red-10"
             icon="far fa-thumbs-down"
-            @click="saleLost"
+            @click="openFailedSale"
           />
         </q-item-section>
         <q-item-section>
@@ -131,11 +138,41 @@
       </q-item>
     </q-card>
   </q-dialog>
+
+  <q-dialog
+    v-model="addFailedSales"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    persistent
+  >
+    <q-card>
+      <q-item class="text-white bg-primary">
+        <q-item-section>
+          <q-item-label class="text-h6"> Venta perdida </q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Cerrar" color="red" v-close-popup />
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Guardar" color="blue" @click="saleLost" />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item>
+        <q-item-section>
+          <failed-sale-form
+            ref="fail"
+            :followUp="currentItem"
+            :failedSale="currentItem.failed_sale"
+          />
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
 import { ref, onMounted, inject } from "vue";
-import { useQuasar } from "quasar";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { checkPosition } from "src/boot/checks";
 
@@ -145,12 +182,11 @@ import FollowUpMenu from "src/components/FollowUp/FollowUpMenu.vue";
 import FollowUpCard from "src/components/FollowUp/FollowUpCard.vue";
 import FollowUpNextForm from "src/components/FollowUp/FollowUpNextForm.vue";
 import FeedbackForm from "src/components/FollowUp/FeedbackForm.vue";
+import FailedSaleForm from "src/components/FollowUp/FailedSaleForm.vue";
 
 const { followUp } = defineProps(["followUp"]);
 
 const bus = inject("bus");
-
-const $q = useQuasar();
 
 const splitterModel = ref(50);
 const currentItem = ref(null);
@@ -159,6 +195,8 @@ const add = ref(null);
 const addFollowUp = ref(false);
 const next = ref(null);
 const children = ref(null);
+const addFailedSales = ref(null);
+const fail = ref(null);
 
 bus.on("open-feedback", (item) => {
   children.value = item;
@@ -210,13 +248,30 @@ const postNext = async () => {
   getItem(currentItem.value.id);
 };
 
+const openFailedSale = () => {
+  addFailedSales.value = true;
+};
+
 const saleLost = async () => {
-  let res = await sendRequest(
-    "GET",
-    null,
-    "/api/intranet/followUp/lost/" + currentItem.value.id,
-    ""
-  );
+  const fail_valid = await fail.value.validate();
+  if (!fail_valid) {
+    notifyIncomplete();
+    return;
+  }
+  const final = {
+    ...fail.value.formFailedSale,
+  };
+  if (final.id) {
+    let res = await sendRequest(
+      "PUT",
+      final,
+      "/api/intranet/failedSale/" + final.id,
+      ""
+    );
+  } else {
+    let res = await sendRequest("POST", final, "/api/intranet/failedSale", "");
+  }
+  addFailedSales.value = false;
   getItem(currentItem.value.id);
 };
 
