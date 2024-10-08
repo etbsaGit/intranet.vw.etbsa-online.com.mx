@@ -17,7 +17,7 @@
         class="bg-red-11"
         style="border-radius: 10px"
       />
-      <!-- <q-tab name="movies" label="Documentos" /> -->
+      <q-tab name="quote" label="Cotizaciones" />
     </q-tabs>
     <q-separator />
 
@@ -30,9 +30,8 @@
         <failed-sale-card :followUp="followUp" />
       </q-tab-panel>
 
-      <q-tab-panel name="movies">
-        <div class="text-h6">Movies</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      <q-tab-panel name="quote" class="q-pa-none">
+        <quote-index :followUp="followUp" />
       </q-tab-panel>
     </q-tab-panels>
   </q-card>
@@ -42,6 +41,7 @@
 import { ref } from "vue";
 import FollowUpTimeLine from "src/components/FollowUp/FollowUpTimeLine.vue";
 import FailedSaleCard from "src/components/FollowUp/FailedSaleCard.vue";
+import QuoteIndex from "src/components/FollowUp/QuoteIndex.vue";
 const tab = ref("timeLine");
 const { followUp } = defineProps(["followUp"]);
 </script>
