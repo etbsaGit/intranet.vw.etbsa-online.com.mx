@@ -7,6 +7,7 @@
       :active="link === 'profile'"
       @click="link = 'profile'"
       active-class="my-menu-link"
+      v-if="!checkRole('Admin')"
     >
       <q-item-section avatar>
         <q-icon name="account_circle" />

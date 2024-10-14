@@ -40,6 +40,20 @@
             </q-item-section>
           </q-item>
         </template>
+        <template v-slot:top-right>
+          <q-item>
+            <q-item-section>
+              <q-btn
+                dense
+                outline
+                label="Reportes"
+                color="primary"
+                @click="showReport = true"
+                icon="fas fa-chart-pie"
+              />
+            </q-item-section>
+          </q-item>
+        </template>
         <template v-slot:bottom>
           <q-space />
           <td>
@@ -76,7 +90,12 @@
             <q-td key="id_sale">
               {{ props.row.id_sale }}
             </q-td>
-
+            <q-td key="date">
+              {{ props.row.date }}
+            </q-td>
+            <q-td key="amount">
+              {{ formatCurrency(props.row.amount) }}
+            </q-td>
             <q-td key="agency">
               {{ props.row.agency.name }}
             </q-td>
@@ -352,14 +371,43 @@
       </q-item>
     </q-card>
   </q-dialog>
+
+  <q-dialog
+    v-model="showReport"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    persistent
+    maximized
+  >
+    <q-card style="width: 100%">
+      <q-item class="text-white bg-primary">
+        <q-item-section>
+          <q-item-label class="text-h6">
+            Reporte de ventas por vendedor
+          </q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Cerrar" color="red" v-close-popup @click="close" />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item>
+        <q-item-section>
+          <sale-report-index />
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
+import { formatCurrency } from "src/boot/format";
 
 import SaleForm from "src/components/Sale/SaleForm.vue";
 import SaleAllForm from "src/components/Sale/SaleAllForm.vue";
+import SaleReportIndex from "src/components/Sale/SaleReportIndex.vue";
 
 const { customer } = defineProps(["customer"]);
 
@@ -370,6 +418,7 @@ const add = ref(null);
 const showEdit = ref(false);
 const edit = ref(null);
 const showFilters = ref(false);
+const showReport = ref(false);
 
 const currentCustomer = ref(customer ? customer : null);
 
@@ -409,6 +458,18 @@ const columns = [
     field: "id_sale",
     align: "left",
     label: "# de factura",
+  },
+  {
+    name: "date",
+    field: "date",
+    align: "left",
+    label: "Fecha de factura",
+  },
+  {
+    name: "amount",
+    field: "amount",
+    align: "left",
+    label: "$ de factura",
   },
   // {
   //   name: "status",
@@ -550,7 +611,7 @@ const onInputChange = () => {
 };
 
 const close = () => {
-  getRows();
+  getRows(current_page.value);
   getOptions();
 };
 

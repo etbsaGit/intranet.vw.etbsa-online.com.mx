@@ -11,6 +11,50 @@
           :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
         />
       </q-item-section>
+      <q-item-section>
+        <q-input
+          v-model="formSale.amount"
+          outlined
+          dense
+          label="Monto de factura"
+          lazy-rules
+          hint
+          prefix="$"
+          filled
+          mask="#.##"
+          fill-mask="0"
+          reverse-fill-mask
+          input-class="text-right"
+        />
+      </q-item-section>
+      <q-item-section>
+        <q-input
+          v-model="formSale.date"
+          readonly
+          dense
+          outlined
+          label="Fecha factura"
+          mask="date"
+          hint
+          :rules="[(val) => val !== null || 'Obligatorio']"
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-date v-model="formSale.date" minimal>
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+      </q-item-section>
     </q-item>
     <q-item>
       <q-item-section>
@@ -86,7 +130,7 @@
           :options="vehicles"
           label="Vehiculo"
           option-value="id"
-          option-label="serial_number"
+          option-label="model"
           option-disable="inactive"
           emit-value
           map-options
@@ -189,6 +233,7 @@ const filterCustomers = ref(customers);
 
 const formSale = ref({
   id: sale ? sale.id : null,
+  amount: sale ? sale.amount : null,
   id_sale: sale ? sale.id_sale : null,
   status_id: sale ? sale.status_id : null,
   sales_channel_id: sale ? sale.sales_channel_id : null,
@@ -198,6 +243,7 @@ const formSale = ref({
   customer_id: sale ? sale.customer_id : customer ? customer.id : null,
   employee_id: sale ? sale.employee_id : null,
   comments: sale ? sale.comments : null,
+  date: sale ? sale.date : null,
 });
 
 const filterFn = (val, update, abort) => {
