@@ -211,6 +211,74 @@
         />
       </q-item-section>
     </q-item>
+    <q-item>
+      <q-item-section>
+        <q-toggle
+          :color="formSale.cancel == 1 ? 'red' : 'green'"
+          keep-color
+          v-model="formSale.cancel"
+          label="Cancelada"
+          checked-icon="close"
+          unchecked-icon="check"
+          indeterminate-icon="error"
+          :true-value="1"
+          :false-value="0"
+        />
+      </q-item-section>
+      <q-item-section>
+        <q-input
+          v-if="formSale.cancel == 1"
+          dense
+          outlined
+          v-model="formSale.cancellation_date"
+          label="Fecha de cancelacion"
+          :rules="[(val) => val !== null || 'Obligatorio']"
+          readonly=""
+        >
+          <template v-slot:append>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <q-date
+                  minimal
+                  v-model="formSale.cancellation_date"
+                  mask="YYYY-MM-DD"
+                >
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+      </q-item-section>
+      <q-item-section>
+        <q-input
+          v-if="formSale.cancel == 1"
+          v-model="formSale.cancellation_folio"
+          outlined
+          dense
+          label="Folio de cancelacion"
+          lazy-rules
+          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
+        />
+      </q-item-section>
+      <q-item-section>
+        <q-input
+          v-if="formSale.cancel == 1"
+          v-model="formSale.cancellation_reason"
+          outlined
+          dense
+          label="Motivo de cancelacion"
+          lazy-rules
+          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
+        />
+      </q-item-section>
+    </q-item>
   </q-form>
 </template>
 
@@ -244,6 +312,10 @@ const formSale = ref({
   employee_id: sale ? sale.employee_id : null,
   comments: sale ? sale.comments : null,
   date: sale ? sale.date : null,
+  cancel: sale ? sale.cancel : 0,
+  cancellation_reason: sale ? sale.cancellation_reason : null,
+  cancellation_folio: sale ? sale.cancellation_folio : null,
+  cancellation_date: sale ? sale.cancellation_date : null,
 });
 
 const filterFn = (val, update, abort) => {
@@ -261,9 +333,16 @@ const getOptions = async () => {
   statuses.value = res.statuses;
   sales_channels.value = res.sales_channels;
   types.value = res.types;
-  vehicles.value = res.vehicles;
   customers.value = res.customers;
   employees.value = res.employees;
+
+  // Verifica si inventory_id existe
+  if (sale) {
+    // Combina vehicles y inventories en un nuevo array
+    vehicles.value = [...res.vehicles, ...res.inventories];
+  } else {
+    vehicles.value = res.vehicles;
+  }
 };
 
 const validate = async () => {

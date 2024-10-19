@@ -49,7 +49,21 @@
           :rules="[(val) => val !== null || 'Obligatorio']"
         >
           <template v-slot:after>
-            <q-btn label="Obtener" @click="submitForm" />
+            <q-btn
+              dense
+              label="Obtener"
+              @click="submitForm"
+              outline
+              color="primary"
+            />
+            <q-space />
+            <q-btn
+              dense
+              label="Descargar PDF"
+              @click="onClickPDF"
+              outline
+              color="red-5"
+            />
           </template>
         </q-select>
       </q-item-section>
@@ -111,7 +125,7 @@ const years = Array.from({ length: 10 }, (_, i) => currentYear - 9 + i).map(
 );
 
 const formReport = ref({
-  month: meses[new Date().getMonth()], // Solo el id del mes actual
+  month: new Date().getMonth() + 1, // Solo el id del mes actual
   year: currentYear,
   agency_id: null,
 });
@@ -119,6 +133,22 @@ const formReport = ref({
 const getOptions = async () => {
   const res = await sendRequest("GET", null, "/api/intranet/agency", "");
   agencies.value = res;
+};
+
+const onClickPDF = async () => {
+  const isValid = await myForm.value.validate();
+  if (isValid) {
+    let res = await sendRequest(
+      "POST",
+      formReport.value,
+      "/api/intranet/sales/report/agency/pdf",
+      ""
+    );
+    const base64Response = await fetch(`data:application/pdf;base64,${res}`);
+    const blob = await base64Response.blob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  }
 };
 
 const submitForm = async () => {

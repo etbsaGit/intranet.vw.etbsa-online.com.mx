@@ -74,8 +74,15 @@
           <q-space />
         </template>
         <template v-slot:body="props">
-          <q-tr :props="props" @click="toggleExpand(props.row)">
-            <q-tooltip class="text-h6 bg-primary">
+          <q-tr
+            :props="props"
+            @click="toggleExpand(props.row)"
+            :class="{ 'text-red': props.row.cancel === 1 }"
+          >
+            <q-tooltip
+              class="text-h6 bg-primary"
+              :class="{ 'text-red': props.row.cancel === 1 }"
+            >
               Haz click para ver detalle
             </q-tooltip>
             <q-td key="editar" :props="props">
