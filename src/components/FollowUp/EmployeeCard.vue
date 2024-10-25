@@ -64,11 +64,11 @@
           <q-item-section>
             <q-item-label>
               <strong>Puesto:</strong>
-              {{ employee.position.name }}
+              {{ employee.position?.name }}
             </q-item-label>
             <q-item-label>
               <strong>Departamento:</strong>
-              {{ employee.department.name }}
+              {{ employee.department?.name }}
             </q-item-label>
           </q-item-section>
         </q-item>

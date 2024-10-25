@@ -17,14 +17,15 @@
         dense
         @update:model-value="updateMunicipalities(selectedState)"
       />
-      <!-- :rules="[(val) => val !== null || 'Obligatorio']" -->
     </q-item-section>
   </q-item>
+
   <q-item>
     <q-item-section>
       <q-item-label caption align="center">-Municipios-</q-item-label>
     </q-item-section>
   </q-item>
+
   <div class="row items-start">
     <q-item
       v-for="municipality in municipalities"
@@ -42,6 +43,13 @@
       </q-item-section>
     </q-item>
   </div>
+
+  <q-btn
+    label="Seleccionar/Deseleccionar Todos"
+    @click="toggleAllMunicipalities"
+    color="primary"
+    class="q-mt-md"
+  />
 </template>
 
 <script setup>
@@ -76,6 +84,14 @@ const getMunicipalities = async (id) => {
     ""
   );
   municipalities.value = res;
+};
+
+const toggleAllMunicipalities = () => {
+  if (selectedMunicipalities.value.length === municipalities.value.length) {
+    selectedMunicipalities.value = [];
+  } else {
+    selectedMunicipalities.value = municipalities.value.map((m) => m.id);
+  }
 };
 
 const marcarToogle = () => {

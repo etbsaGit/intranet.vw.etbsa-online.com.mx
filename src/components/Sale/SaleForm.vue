@@ -297,7 +297,7 @@ const types = ref([]);
 const vehicles = ref([]);
 const employees = ref([]);
 const customers = ref([]);
-const filterCustomers = ref(customers);
+const filterCustomers = ref(null);
 
 const formSale = ref({
   id: sale ? sale.id : null,
