@@ -68,8 +68,9 @@
     transition-show="rotate"
     transition-hide="rotate"
     persistent
+    full-width
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Agregar</q-item-label>
@@ -82,7 +83,7 @@
         </q-item-section>
       </q-item>
       <q-separator />
-      <q-item>
+      <q-item class="q-pa-none">
         <q-item-section>
           <quote-form ref="add" :followUp="followUp" />
         </q-item-section>
@@ -95,8 +96,9 @@
     transition-show="rotate"
     transition-hide="rotate"
     persistent
+    full-width
   >
-    <q-card style="width: 100%">
+    <q-card>
       <q-item class="text-white bg-primary">
         <q-item-section>
           <q-item-label class="text-h6">Actualizar</q-item-label>
