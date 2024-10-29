@@ -10,7 +10,6 @@
       narrow-indicator
     >
       <q-tab name="General" label="General" />
-      <q-tab name="Adicionales" label="Adicionales" />
       <q-tab name="Imagenes" label="Imagenes" />
     </q-tabs>
 
@@ -137,7 +136,6 @@
             />
           </q-item-section>
         </q-item>
-
         <q-item>
           <q-item-section>
             <q-select
@@ -190,8 +188,12 @@
             />
           </q-item-section>
         </q-item>
-      </q-tab-panel>
-      <q-tab-panel name="Adicionales">
+        <q-separator></q-separator>
+        <q-item>
+          <q-item-section>
+            <q-item-label caption align="center">-Equipo aliado-</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item
           v-for="(adicional, index) in formQuote.additionals"
           :key="index"
@@ -270,6 +272,31 @@
           </q-item-section>
         </q-item>
       </q-tab-panel>
+
+      <q-tab-panel name="Imagenes">
+        <q-item>
+          <q-item-section>
+            <q-file
+              dense
+              outlined
+              clearable
+              lazy-rules
+              color="secondary"
+              v-model="formQuote.file"
+              label="Imagenes del equipo"
+              hint="Una imagen a la vez"
+              @input="convertirFile($event)"
+              @clear="formQuote.images = []"
+              accept=".jpg, .jpeg, .png, .jfif"
+            />
+          </q-item-section>
+        </q-item>
+        <q-item v-if="formQuote.images && formQuote.images.length > 0">
+          <q-item-section v-for="image in formQuote.images" :key="image.id">
+            <q-img :src="image" />
+          </q-item-section>
+        </q-item>
+      </q-tab-panel>
     </q-tab-panels>
   </q-form>
 </template>
@@ -287,6 +314,8 @@ const types = ref([]);
 const myForm = ref(null);
 const tab = ref("General");
 
+const images = [];
+
 const formQuote = ref({
   id: quote ? quote.id : null,
   expiration_date: quote ? quote.expiration_date : null,
@@ -302,6 +331,8 @@ const formQuote = ref({
   status_id: quote ? quote.status_id : null,
   type_id: quote ? quote.type_id : null,
   additionals: quote ? quote.additionals : [],
+  images: [],
+  file: [],
 });
 
 // Obtener opciones de inventario
@@ -409,6 +440,30 @@ const addAdditionals = () => {
 
 const deleteAdditionals = (index) => {
   formQuote.value.additionals.splice(index, 1);
+};
+
+const convertirFile = (event) => {
+  const archivos = event.target.files;
+  if (archivos) {
+    Array.from(archivos).forEach((archivo) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64Data = e.target.result;
+        formQuote.value.images.push(base64Data);
+      };
+      reader.readAsDataURL(archivo);
+    });
+  } else {
+    formQuote.value.images = [];
+  }
+};
+
+const delImage = async (image) => {
+  const index = images.indexOf(image);
+
+  if (index !== -1) {
+    images.splice(index, 1);
+  }
 };
 
 // Validación del formulario

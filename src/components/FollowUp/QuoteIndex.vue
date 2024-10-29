@@ -69,6 +69,7 @@
     transition-hide="rotate"
     persistent
     full-width
+    full-height
   >
     <q-card>
       <q-item class="text-white bg-primary">
@@ -97,6 +98,7 @@
     transition-hide="rotate"
     persistent
     full-width
+    full-height
   >
     <q-card>
       <q-item class="text-white bg-primary">
