@@ -38,7 +38,7 @@ const routes = [
       { path: "", component: () => import("pages/HomePage.vue") },
       {
         path: "/vehicle",
-        component: () => import("src/pages/Vehicle/IndexPage.vue"),
+        component: () => import("src/pages/Vehicle/VehiclePage.vue"),
       },
       {
         path: "/customer",
@@ -51,6 +51,10 @@ const routes = [
       {
         path: "/follow",
         component: () => import("src/pages/FollowUp/FollowUpPage.vue"),
+      },
+      {
+        path: "/followCalendar",
+        component: () => import("src/pages/FollowUp/FollowUpCalendar.vue"),
       },
     ],
   },

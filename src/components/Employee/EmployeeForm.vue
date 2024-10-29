@@ -23,6 +23,30 @@
           @input="convertirFile($event)"
         />
       </q-item-section>
+      <q-item-section class="items-center" avatar>
+        <q-avatar size="180px" v-if="formEmployee.base64qr || pathqr" square>
+          <q-img
+            :src="formEmployee.base64qr ? formEmployee.base64qr : pathqr"
+          />
+        </q-avatar>
+        <q-avatar v-else size="180px">
+          <q-icon name="fas fa-qrcode" />
+        </q-avatar>
+        <q-space />
+        <q-file
+          clearable
+          color="secondary"
+          dense
+          filled
+          :readonly="!checkPosition('Gerente')"
+          v-model="formEmployee.fileqr"
+          label="Subir QR"
+          lazy-rules
+          accept=".jpg, .jpeg, .png, .jfif"
+          @clear="formEmployee.base64qr = null"
+          @input="convertirFileQr($event)"
+        />
+      </q-item-section>
       <q-item-section>
         <q-item>
           <q-item-section>
@@ -219,6 +243,7 @@ import { checkPosition } from "src/boot/checks";
 const { employee } = defineProps(["employee"]);
 
 const path = employee ? employee.pic : null;
+const pathqr = employee ? employee.qr : null;
 
 const agencies = ref([]);
 const types = ref([]);
@@ -242,7 +267,9 @@ const formEmployee = ref({
   department_id: employee ? employee.department_id : null,
   email: employee?.user?.email ?? null,
   base64: null,
+  base64qr: null,
   file: [],
+  fileqr: [],
 });
 
 const convertirFile = (event) => {
@@ -256,6 +283,20 @@ const convertirFile = (event) => {
     reader.readAsDataURL(archivo);
   } else {
     formEmployee.value.base64.value = null; // Limpiar base64 cuando no hay archivo seleccionado
+  }
+};
+
+const convertirFileQr = (event) => {
+  const archivo = event.target.files[0];
+  if (archivo) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64Data = e.target.result;
+      formEmployee.value.base64qr = base64Data;
+    };
+    reader.readAsDataURL(archivo);
+  } else {
+    formEmployee.value.base64qr.value = null; // Limpiar base64 cuando no hay archivo seleccionado
   }
 };
 

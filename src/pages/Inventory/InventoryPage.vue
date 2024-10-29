@@ -181,8 +181,6 @@
             </template>
           </q-input>
         </q-item-section>
-      </q-item>
-      <q-item>
         <q-item-section>
           <q-select
             v-model="filterForm.vehicle_id"
@@ -190,23 +188,6 @@
             label="Modelo"
             option-value="id"
             option-label="name"
-            option-disable="inactive"
-            emit-value
-            map-options
-            transition-show="jump-up"
-            transition-hide="jump-up"
-            outlined
-            dense
-            clearable
-          />
-        </q-item-section>
-        <q-item-section>
-          <q-select
-            v-model="filterForm.vehicle_body_id"
-            :options="vehicleBodies"
-            label="Carroceria"
-            option-value="id"
-            option-label="configuration"
             option-disable="inactive"
             emit-value
             map-options
@@ -328,14 +309,12 @@ const filterForm = ref({
   type_id: null,
   agency_id: null,
   vehicle_id: null,
-  vehicle_body_id: null,
 });
 
 const statuses = ref([]);
 const types = ref([]);
 const agencies = ref([]);
 const vehicles = ref([]);
-const vehicleBodies = ref([]);
 
 const columns = [
   {
@@ -343,6 +322,13 @@ const columns = [
     field: "editar",
     align: "left",
     label: "detalle",
+  },
+  {
+    name: "priority",
+    label: "Prioridad",
+    align: "left",
+    field: "priority",
+    sortable: true,
   },
   {
     name: "vehicle",
@@ -421,13 +407,6 @@ const columns = [
     field: "agency",
     sortable: true,
   },
-  {
-    name: "vehicle_body",
-    label: "Carroceria",
-    align: "left",
-    field: "vehicle_body",
-    sortable: true,
-  },
 ];
 
 const openEdit = (item) => {
@@ -457,7 +436,6 @@ const getOptions = async () => {
   types.value = res.types;
   agencies.value = res.agencies;
   vehicles.value = res.vehicles;
-  vehicleBodies.value = res.vehicleBodies;
 };
 
 const getRows = async (page = 1) => {

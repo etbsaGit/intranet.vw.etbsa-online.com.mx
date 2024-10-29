@@ -21,16 +21,18 @@
       </q-item-section>
       <q-item-section>
         <q-input
-          mask="#,###,###.##"
-          reverse-fill-mask
-          prefix="$"
-          dense
-          filled
-          color="secondary"
           v-model="formPrice.price"
-          label="Precio del producto"
+          outlined
+          dense
+          label="Precio"
           lazy-rules
           hint
+          prefix="$"
+          filled
+          mask="#.##"
+          fill-mask="0"
+          reverse-fill-mask
+          input-class="text-right"
         />
       </q-item-section>
     </q-item>

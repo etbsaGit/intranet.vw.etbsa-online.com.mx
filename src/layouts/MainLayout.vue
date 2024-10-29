@@ -51,13 +51,27 @@
       :width="250"
       :breakpoint="250"
     >
-      <q-item class="avatar-container">
-        <q-avatar size="150px" color="primary" text-color="white">
-          {{
-            user.name.charAt(0).toUpperCase() +
-            user.name.charAt(1).toUpperCase()
-          }}
+      <q-item class="avatar-container" v-if="user.employee">
+        <q-avatar
+          size="150px"
+          color="white"
+          text-color="white"
+          v-if="user.employee.pic && user.employee.picture"
+        >
+          <img :src="user.employee.pic" alt="Foto de la marca" />
         </q-avatar>
+        <q-avatar v-else size="150px" color="primary" text-color="white">
+          {{ user.employee.first_name.charAt(0).toUpperCase()
+          }}{{ user.employee.paternal_surname.charAt(0).toUpperCase() }}
+        </q-avatar>
+      </q-item>
+      <q-item class="avatar-container" v-else>
+        <q-avatar
+          size="150px"
+          color="primary"
+          text-color="white"
+          icon="fas fa-user-shield"
+        />
       </q-item>
       <q-expansion-item
         expand-separator

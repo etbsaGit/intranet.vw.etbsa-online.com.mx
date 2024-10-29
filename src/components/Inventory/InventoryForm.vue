@@ -3,6 +3,17 @@
     <q-item>
       <q-item-section>
         <q-input
+          v-model="formInventory.priority"
+          filled
+          dense
+          label="Prioridad"
+          lazy-rules
+          mask="##"
+          :rules="[(val) => (val && val.length > 0) || 'Obligatorio']"
+        />
+      </q-item-section>
+      <q-item-section>
+        <q-input
           v-model="formInventory.serial_number"
           filled
           dense
@@ -95,24 +106,7 @@
           :rules="[(val) => val !== null || 'Obligatorio']"
         />
       </q-item-section>
-      <q-item-section>
-        <q-select
-          v-model="formInventory.vehicle_body_id"
-          :options="vehicleBodies"
-          label="Carroceria"
-          option-value="id"
-          option-label="configuration"
-          option-disable="inactive"
-          emit-value
-          map-options
-          transition-show="jump-up"
-          transition-hide="jump-up"
-          filled
-          dense
-          clearable
-          hint
-        />
-      </q-item-section>
+
       <q-item-section>
         <q-input
           v-model="formInventory.year"
@@ -217,7 +211,6 @@ const statuses = ref([]);
 const types = ref([]);
 const agencies = ref([]);
 const vehicles = ref([]);
-const vehicleBodies = ref([]);
 
 const myForm = ref(null);
 
@@ -235,7 +228,7 @@ const formInventory = ref({
   type_id: inventory ? inventory.type_id : null,
   agency_id: inventory ? inventory.agency_id : null,
   vehicle_id: inventory ? inventory.vehicle_id : null,
-  vehicle_body_id: inventory ? inventory.vehicle_body_id : null,
+  priority: inventory ? inventory.priority : null,
 });
 
 const getOptions = async () => {
@@ -249,7 +242,6 @@ const getOptions = async () => {
   types.value = res.types;
   agencies.value = res.agencies;
   vehicles.value = res.vehicles;
-  vehicleBodies.value = res.vehicleBodies;
 };
 
 const validate = async () => {
