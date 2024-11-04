@@ -35,7 +35,7 @@
             @click="saleActive"
           />
         </q-item-section>
-        <q-item-section v-if="currentItem.children.length >= 3">
+        <!-- <q-item-section v-if="currentItem.children.length >= 3">
           <q-btn
             v-if="
               hasNullFeedback(currentItem.children) &&
@@ -48,7 +48,7 @@
             icon="fas fa-circle-dollar-to-slot"
             @click="saleWin"
           />
-        </q-item-section>
+        </q-item-section> -->
         <q-item-section>
           <q-btn
             v-if="
@@ -203,6 +203,10 @@ bus.on("open-feedback", (item) => {
   addFeedback.value = true;
 });
 
+bus.on("venta-ganada", () => {
+  getItem(followUp.follow_up_id ? followUp.follow_up_id : followUp.id);
+});
+
 const getItem = async (id) => {
   let res = await sendRequest("GET", null, "/api/intranet/followUp/" + id, "");
   currentItem.value = res;
@@ -273,6 +277,7 @@ const saleLost = async () => {
   }
   addFailedSales.value = false;
   getItem(currentItem.value.id);
+  bus.emit("venta-activada");
 };
 
 const saleWin = async () => {
@@ -293,6 +298,7 @@ const saleActive = async () => {
     ""
   );
   getItem(currentItem.value.id);
+  bus.emit("venta-activada");
 };
 
 function hasNullFeedback(array) {

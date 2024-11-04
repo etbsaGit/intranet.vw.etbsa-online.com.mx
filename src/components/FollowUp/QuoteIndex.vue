@@ -32,7 +32,23 @@
         </template>
         <template v-slot:body-cell-status="props">
           <q-td>
-            {{ props.row.status.name }}
+            <q-chip
+              :clickable="
+                props.row.status.name == 'Activa' &&
+                followUp.children.length >= 3 &&
+                hasNullFeedback(followUp.children)
+              "
+              :color="getChipColor(props.row.status.name)"
+              @click="openSale(props.row)"
+            >
+              <q-tooltip
+                v-if="props.row.status.name == 'Activa'"
+                class="bg-green"
+              >
+                Cambiar a venta ganada
+              </q-tooltip>
+              {{ props.row.status.name }}
+            </q-chip>
           </q-td>
         </template>
         <template v-slot:body-cell-inventory="props">
@@ -123,16 +139,47 @@
       </q-item>
     </q-card>
   </q-dialog>
+
+  <q-dialog
+    v-model="addSale"
+    transition-show="rotate"
+    transition-hide="rotate"
+    persistent
+    full-width
+  >
+    <q-card>
+      <q-item class="text-white bg-primary">
+        <q-item-section>
+          <q-item-label class="text-h6">Crear venta</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Cerrar" color="red" v-close-popup />
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Crear" color="blue" @click="postSale" />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item>
+        <q-item-section>
+          <sale-form ref="sale" :quote="selectedItem" />
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { formatCurrency } from "src/boot/format";
 
 import QuoteForm from "src/components/FollowUp/QuoteForm.vue";
+import SaleForm from "src/components/Sale/SaleForm.vue";
 
 const { followUp } = defineProps(["followUp"]);
+
+const bus = inject("bus");
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -140,6 +187,8 @@ const showAdd = ref(false);
 const add = ref(null);
 const showEdit = ref(false);
 const edit = ref(null);
+const addSale = ref(false);
+const sale = ref(null);
 
 const columns = [
   {
@@ -189,6 +238,11 @@ const columns = [
 const openEdit = (item) => {
   selectedItem.value = item;
   showEdit.value = true;
+};
+
+const openSale = (item) => {
+  selectedItem.value = item;
+  addSale.value = true;
 };
 
 const openPDF = (url) => {
@@ -253,6 +307,43 @@ const destroyItem = async () => {
   showEdit.value = false;
   getRows();
 };
+
+const getChipColor = (statusName) => {
+  switch (statusName) {
+    case "Activa":
+      return "blue";
+    case "Ganada":
+      return "green";
+    case "Perdida":
+      return "red";
+    default:
+      return "grey"; // color por defecto
+  }
+};
+
+const postSale = async () => {
+  const sale_valid = await sale.value.validate();
+  if (!sale_valid) {
+    notifyIncomplete();
+    return;
+  }
+  const final = {
+    ...sale.value.formSale,
+  };
+  let res = await sendRequest("POST", final, "/api/intranet/sale", "");
+  addSale.value = false;
+  getRows();
+  bus.emit("venta-ganada");
+};
+
+bus.on("venta-activada", () => {
+  getRows();
+});
+
+function hasNullFeedback(array) {
+  // Verifica si alguno de los objetos en el array tiene feedback nulo
+  return !array.some((item) => item.feedback === null);
+}
 
 onMounted(() => {
   getRows();

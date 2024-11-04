@@ -286,7 +286,7 @@
 import { ref, onMounted, computed } from "vue";
 import { sendRequest } from "src/boot/functions";
 
-const { sale, customer } = defineProps(["sale", "customer"]);
+const { sale, customer, quote } = defineProps(["sale", "customer", "quote"]);
 
 const myForm = ref(null);
 
@@ -301,21 +301,28 @@ const filterCustomers = ref(null);
 
 const formSale = ref({
   id: sale ? sale.id : null,
-  amount: sale ? sale.amount : null,
+  amount: sale ? sale.amount : quote ? quote.amount : null,
   id_sale: sale ? sale.id_sale : null,
   status_id: sale ? sale.status_id : null,
   sales_channel_id: sale ? sale.sales_channel_id : null,
   type_id: sale ? sale.type_id : null,
-  agency_id: sale ? sale.agency_id : null,
-  inventory_id: sale ? sale.inventory_id : null,
-  customer_id: sale ? sale.customer_id : customer ? customer.id : null,
-  employee_id: sale ? sale.employee_id : null,
+  agency_id: sale ? sale.agency_id : quote ? quote.employee.agency_id : null,
+  inventory_id: sale ? sale.inventory_id : quote ? quote.inventory_id : null,
+  customer_id: sale
+    ? sale.customer_id
+    : customer
+    ? customer.id
+    : quote
+    ? quote.customer_id
+    : null,
+  employee_id: sale ? sale.employee_id : quote ? quote.employee_id : null,
   comments: sale ? sale.comments : null,
   date: sale ? sale.date : null,
   cancel: sale ? sale.cancel : 0,
   cancellation_reason: sale ? sale.cancellation_reason : null,
   cancellation_folio: sale ? sale.cancellation_folio : null,
   cancellation_date: sale ? sale.cancellation_date : null,
+  quote_id: sale ? sale.quote_id : quote ? quote.id : null,
 });
 
 const filterFn = (val, update, abort) => {
@@ -337,7 +344,7 @@ const getOptions = async () => {
   employees.value = res.employees;
 
   // Verifica si inventory_id existe
-  if (sale) {
+  if (sale || quote) {
     // Combina vehicles y inventories en un nuevo array
     vehicles.value = [...res.vehicles, ...res.inventories];
   } else {
