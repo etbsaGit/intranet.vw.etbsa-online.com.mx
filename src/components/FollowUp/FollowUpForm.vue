@@ -125,7 +125,20 @@
             dense
             clearable
             :rules="[(val) => val !== null || 'Obligatorio']"
-          />
+          >
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.name }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-chip outline :color="getNumber(scope.opt.name).color">
+                    {{ getNumber(scope.opt.name).label }}
+                  </q-chip>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
         </q-item-section>
       </q-item>
       <q-item>
@@ -237,7 +250,20 @@
                 dense
                 clearable
                 :rules="[(val) => val !== null || 'Obligatorio']"
-              />
+              >
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section>
+                      <q-item-label>{{ scope.opt.name }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-chip outline :color="getNumber(scope.opt.name).color">
+                        {{ getNumber(scope.opt.name).label }}
+                      </q-chip>
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
             </q-item-section>
           </q-item>
           <q-item>
@@ -291,6 +317,7 @@ import { date } from "quasar";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { useAuthStore } from "src/stores/auth";
 import { checkPosition } from "src/boot/checks";
+import { getNumber } from "src/boot/followUp";
 
 import CustomerForm from "src/components/Customer/CustomerForm.vue";
 

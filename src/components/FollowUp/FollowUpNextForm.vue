@@ -49,7 +49,20 @@
           dense
           clearable
           :rules="[(val) => val !== null || 'Obligatorio']"
-        />
+        >
+          <template v-slot:option="scope">
+            <q-item v-bind="scope.itemProps">
+              <q-item-section>
+                <q-item-label>{{ scope.opt.name }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-chip outline :color="getNumber(scope.opt.name).color">
+                  {{ getNumber(scope.opt.name).label }}
+                </q-chip>
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
       </q-item-section>
     </q-item>
     <q-item>
@@ -92,6 +105,8 @@
 import { ref, onMounted, computed } from "vue";
 import { date } from "quasar";
 import { sendRequest } from "src/boot/functions";
+import { getNumber } from "src/boot/followUp";
+
 const { followUp } = defineProps(["followUp"]);
 
 const percentages = ref([]);

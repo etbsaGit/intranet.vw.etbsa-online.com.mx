@@ -75,7 +75,7 @@ export function getNumber(name) {
       number = 0;
       label = "0%";
       value = 0;
-      color = "white";
+      color = "black";
       break;
   }
 

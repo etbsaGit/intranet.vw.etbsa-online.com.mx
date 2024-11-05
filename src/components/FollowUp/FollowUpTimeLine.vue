@@ -21,6 +21,15 @@
             {{ follow.percentage.name }}
             {{ getNumber(follow.percentage.name).label }}
           </q-chip>
+          <q-chip
+            v-if="follow.quote_pdf"
+            outline
+            color="blue"
+            clickable
+            @click="openPDF(follow.qpdf)"
+          >
+            Cotizacion externa
+          </q-chip>
         </q-item-section>
       </q-item>
       <q-item dense>
@@ -79,6 +88,12 @@ const openAddFeedBack = (item) => {
 const getColor = (feedback) => {
   if (!feedback) {
     return "red";
+  }
+};
+
+const openPDF = (url) => {
+  if (url) {
+    window.open(url, "_blank");
   }
 };
 </script>

@@ -33,6 +33,20 @@
         />
       </q-item-section>
     </q-item>
+    <q-item>
+      <q-item-section>
+        <q-file
+          clearable
+          outlined
+          dense
+          v-model="model"
+          label="Agrega aqui una cotizacion"
+          @input="convertirFile($event)"
+          accept=".pdf"
+          hint="Aqui puedes guardar las cotizaciones que se hagan en el cotizador de la financiera"
+        />
+      </q-item-section>
+    </q-item>
   </q-form>
 </template>
 
@@ -45,11 +59,13 @@ const { followUp } = defineProps(["followUp"]);
 const vehicles = ref([]);
 
 const myForm = ref(null);
+const model = ref(null);
 
 const formFeedback = ref({
   id: followUp.id,
   vehicle_id: followUp ? followUp.vehicle_id : null,
   feedback: null,
+  base64: null,
 });
 
 const getOptions = async () => {
@@ -60,6 +76,20 @@ const getOptions = async () => {
     ""
   );
   vehicles.value = res.vehicles;
+};
+
+const convertirFile = (event) => {
+  const archivos = event.target.files;
+  if (archivos) {
+    Array.from(archivos).forEach((archivo) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64Data = e.target.result;
+        formFeedback.value.base64 = base64Data;
+      };
+      reader.readAsDataURL(archivo);
+    });
+  }
 };
 
 const validate = async () => {
