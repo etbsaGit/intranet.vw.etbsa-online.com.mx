@@ -3,15 +3,23 @@
     <q-item>
       <q-item-section class="text-h6">
         <q-item-label>{{ customer.name }}</q-item-label>
-        <q-item-label caption>{{ customer.agent?.name }}</q-item-label>
+        <q-item-label class="justificado-flex" caption v-if="reference">
+          <div class="item">
+            <strong>Contacto: </strong>{{ reference?.name }}
+          </div>
+          <div class="item"><strong>Email: </strong>{{ reference?.mail }}</div>
+          <div class="item">
+            <strong>Telefono: </strong>{{ formatPhoneNumber(reference?.phone) }}
+          </div>
+        </q-item-label>
       </q-item-section>
-      <q-item-section avatar>
+      <q-item-section avatar v-if="reference">
         <q-item-label>
           <q-icon
             name="fab fa-whatsapp"
             size="3em"
             color="green-6"
-            @click="sendMessage(customer)"
+            @click="sendMessage(reference)"
             class="pointer-cursor"
           />
         </q-item-label>
@@ -42,6 +50,20 @@
             <q-item-label>
               <strong>Telefono celular:</strong>
               {{ formatPhoneNumber(customer.phone) }}
+              <q-icon
+                name="fab fa-whatsapp"
+                size="2em"
+                color="green-6"
+                @click="sendMessage(customer)"
+                class="pointer-cursor"
+              />
+              <q-tooltip
+                anchor="center left"
+                self="center right"
+                class="text-h6 bg-green-6"
+              >
+                Abrir WhatsApp
+              </q-tooltip>
             </q-item-label>
             <q-item-label>
               <strong>Telefono fijo:</strong>
@@ -91,12 +113,12 @@
 import { formatPhoneNumber } from "src/boot/format";
 import { useQuasar } from "quasar";
 
-const { customer } = defineProps(["customer"]);
+const { customer, reference } = defineProps(["customer", "reference"]);
 
 const $q = useQuasar();
 
-const sendMessage = (customer) => {
-  const phone = customer.phone;
+const sendMessage = (item) => {
+  const phone = item?.phone;
   if (!phone) {
     $q.notify({
       color: "red-5",
@@ -128,5 +150,16 @@ const sendMessage = (customer) => {
 <style scoped>
 .pointer-cursor {
   cursor: pointer; /* Cambia el cursor a una manita cuando el ratón está sobre el elemento */
+}
+
+.justificado-flex {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.justificado-flex .item {
+  display: flex;
+  align-items: center;
 }
 </style>

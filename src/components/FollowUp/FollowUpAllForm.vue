@@ -8,7 +8,10 @@
       </q-item>
       <q-item>
         <q-item-section>
-          <customer-card :customer="currentItem.customer" />
+          <customer-card
+            :customer="currentItem.customer"
+            :reference="currentItem.reference"
+          />
         </q-item-section>
       </q-item>
       <q-item>

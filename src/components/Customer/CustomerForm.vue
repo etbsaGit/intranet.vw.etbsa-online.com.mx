@@ -71,7 +71,7 @@
         />
       </q-item-section>
     </q-item>
-    <q-item v-if="isFísicaSelected">
+    <!-- <q-item v-if="isFísicaSelected">
       <q-item-section>
         <q-select
           v-model="formCustomer.agent_id"
@@ -90,7 +90,7 @@
           hint
         />
       </q-item-section>
-    </q-item>
+    </q-item> -->
     <q-separator />
     <q-item>
       <q-item-section>

@@ -11,6 +11,7 @@
     <q-tab name="info" icon="person" label="Informacion" />
     <q-tab name="sales" icon="request_quote" label="Ventas" />
     <q-tab name="docs" icon="folder" label="Documentos" />
+    <q-tab name="references" icon="group" label="Contactos" />
   </q-tabs>
   <q-separator />
 
@@ -38,6 +39,9 @@
     <q-tab-panel name="docs">
       <customer-docs-index :customer="currentCustomer" :key="currentCustomer" />
     </q-tab-panel>
+    <q-tab-panel name="references">
+      <reference-index :customer="currentCustomer" :key="currentCustomer" />
+    </q-tab-panel>
   </q-tab-panels>
 </template>
 
@@ -48,6 +52,7 @@ import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import CustomerForm from "src/components/Customer/CustomerForm.vue";
 import SalePage from "src/pages/Sale/SalePage.vue";
 import CustomerDocsIndex from "../CustomerDocs/CustomerDocsIndex.vue";
+import ReferenceIndex from "src/components/References/ReferenceIndex.vue";
 
 const { customer } = defineProps(["customer"]);
 

@@ -30,20 +30,107 @@
             @filter="filterFn"
             input-debounce="0"
             behavior="menu"
+            @update:model-value="updateRefe(formFollowUp.customer_id)"
           >
             <template v-slot:no-option>
               <q-item>
-                <q-item-section class="text-grey"> No results </q-item-section>
+                <q-item-section>
+                  <q-btn
+                    outline
+                    label="Agregar cliente"
+                    color="primary"
+                    @click="showAdd = true"
+                    icon="add_circle"
+                  />
+                </q-item-section>
               </q-item>
             </template>
             <template v-slot:after>
-              <q-btn
-                outline
-                label="Agregar cliente"
-                color="primary"
-                @click="showAdd = true"
-                icon="add_circle"
-              />
+              <q-item>
+                <q-item-section v-if="selectedCustomer" side>
+                  <q-item-label>
+                    <strong>RFC:</strong>
+                    {{ selectedCustomer.rfc }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section v-if="selectedCustomer" side>
+                  <q-item-label>
+                    <strong>CURP:</strong>
+                    {{ selectedCustomer.curp }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section v-if="selectedCustomer" side>
+                  <q-item-label>
+                    <strong>Telefono:</strong>
+                    {{ formatPhoneNumber(selectedCustomer.phone) }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section>
+                  {{ scope.opt.name }}
+                </q-item-section>
+                <q-item-section>
+                  Telefono: {{ formatPhoneNumber(scope.opt.phone) }}
+                </q-item-section>
+                <q-item-section> RFC: {{ scope.opt.rfc }} </q-item-section>
+                <q-item-section> CURP: {{ scope.opt.curp }} </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-item-section>
+      </q-item>
+      <q-item v-if="selectedCustomer">
+        <q-item-section>
+          <q-select
+            v-model="formFollowUp.reference_id"
+            :options="references"
+            label="Contacto"
+            option-value="id"
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+            options-dense
+            hint
+          >
+            <template v-slot:after>
+              <q-item>
+                <q-item-section v-if="selectedReference" side>
+                  <q-item-label>
+                    <strong>Telefono:</strong>
+                    {{ formatPhoneNumber(selectedReference.phone) }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section class="text-grey">
+                  <q-btn
+                    outline
+                    dense
+                    color="primary"
+                    icon="add"
+                    label="Click para agregar referencia"
+                    @click="showRefe = true"
+                  />
+                </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section>
+                  {{ scope.opt.name }}
+                </q-item-section>
+
+                <q-item-section side>
+                  {{ formatPhoneNumber(scope.opt.phone) }}
+                </q-item-section>
+              </q-item>
             </template>
           </q-select>
         </q-item-section>
@@ -309,17 +396,46 @@
       </q-item>
     </q-card>
   </q-dialog>
+
+  <q-dialog
+    v-model="showRefe"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    persistent
+  >
+    <q-card style="width: 100%">
+      <q-item class="text-white bg-primary">
+        <q-item-section>
+          <q-item-label class="text-h6">Agregar referencia</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Cerrar" color="red" v-close-popup />
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Agregar" color="blue" @click="postItemRefe" />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item>
+        <q-item-section>
+          <reference-form ref="refe" :customer="selectedCustomer" />
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { date } from "quasar";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { useAuthStore } from "src/stores/auth";
 import { checkPosition } from "src/boot/checks";
 import { getNumber } from "src/boot/followUp";
+import { formatPhoneNumber } from "src/boot/format";
 
 import CustomerForm from "src/components/Customer/CustomerForm.vue";
+import ReferenceForm from "src/components/References/ReferenceForm.vue";
 
 const authStore = useAuthStore();
 const usuario = authStore.authUser;
@@ -333,6 +449,10 @@ function dateOptions(date) {
 
 const showAdd = ref(false);
 const add = ref(null);
+const showRefe = ref(false);
+const refe = ref(null);
+const selectedCustomer = ref(null);
+const selectedReference = ref(null);
 
 const postItem = async () => {
   const add_valid = await add.value.validate();
@@ -349,6 +469,21 @@ const postItem = async () => {
   getOptions();
 };
 
+const postItemRefe = async () => {
+  const refe_valid = await refe.value.validate();
+  if (!refe_valid) {
+    notifyIncomplete();
+    return;
+  }
+  const final = {
+    ...refe.value.formReference,
+  };
+  let res = await sendRequest("POST", final, "/api/intranet/reference", "");
+  showRefe.value = false;
+  formFollowUp.value.reference_id = res.id;
+  getRefe(formFollowUp.value.customer_id);
+};
+
 const { followUp } = defineProps(["followUp"]);
 
 const customers = ref([]);
@@ -356,6 +491,7 @@ const employees = ref([]);
 const vehicles = ref([]);
 const origins = ref([]);
 const percentages = ref([]);
+const references = ref([]);
 
 const myForm = ref(null);
 
@@ -368,6 +504,7 @@ const formFollowUp = ref({
   vehicle_id: followUp ? followUp.vehicle_id : null,
   origin_id: followUp ? followUp.origin_id : null,
   percentage_id: followUp ? followUp.percentage_id : null,
+  reference_id: followUp ? followUp.reference_id : null,
   follow_up_id: followUp ? followUp.follow_up_id : null,
   next_follow: {
     date: followUp ? followUp.next_follow?.date : null,
@@ -407,6 +544,42 @@ function filterFn(val, update) {
     );
   });
 }
+
+const updateRefe = (id) => {
+  formFollowUp.value.reference_id = null;
+  references.value = [];
+  if (id) {
+    getRefe(id);
+  }
+};
+
+const getRefe = async (id) => {
+  let res = await sendRequest(
+    "GET",
+    null,
+    "/api/intranet/references/customer/" + id,
+    ""
+  );
+  references.value = res;
+};
+
+// Watch para obtener los datos del cliente seleccionado
+watch(
+  () => formFollowUp.value.customer_id,
+  (newValue) => {
+    selectedCustomer.value =
+      customers.value.find((customer) => customer.id === newValue) || null;
+  }
+);
+
+// Watch para obtener los datos del cliente seleccionado
+watch(
+  () => formFollowUp.value.reference_id,
+  (newValue) => {
+    selectedReference.value =
+      references.value.find((reference) => reference.id === newValue) || null;
+  }
+);
 
 const validate = async () => {
   return await myForm.value.validate();

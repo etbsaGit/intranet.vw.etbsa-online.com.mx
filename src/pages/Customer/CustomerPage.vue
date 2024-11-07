@@ -40,6 +40,21 @@
             </q-item-section>
           </q-item>
         </template>
+        <template v-slot:top-right>
+          <q-item>
+            <q-item-section>
+              <q-btn
+                v-if="checkPosition('Gerente')"
+                dense
+                outline
+                label="Asignar clientes"
+                color="primary"
+                icon="groups"
+                @click="showAsync = true"
+              />
+            </q-item-section>
+          </q-item>
+        </template>
         <template v-slot:bottom>
           <q-space />
           <td>
@@ -253,6 +268,31 @@
       </q-item>
     </q-card>
   </q-dialog>
+
+  <q-dialog
+    v-model="showAsync"
+    transition-show="slide-up"
+    transition-hide="slide-down"
+    persistent
+    maximized
+  >
+    <q-card>
+      <q-item class="text-white bg-primary">
+        <q-item-section>
+          <q-item-label class="text-h6">Asignacion de clientes</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-btn label="Cerrar" color="red" v-close-popup />
+        </q-item-section>
+      </q-item>
+      <q-separator />
+      <q-item class="q-pa-none">
+        <q-item-section>
+          <customer-async />
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -262,6 +302,8 @@ import { formatPhoneNumber } from "src/boot/format.js";
 
 import CustomerForm from "src/components/Customer/CustomerForm.vue";
 import CustomerAllForm from "src/components/Customer/CustomerAllForm.vue";
+import CustomerAsync from "src/components/Customer/CustomerAsync.vue";
+import { checkPosition } from "src/boot/checks";
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -270,6 +312,7 @@ const add = ref(null);
 const showEdit = ref(false);
 const edit = ref(null);
 const showFilters = ref(false);
+const showAsync = ref(false);
 
 const next_page_url = ref("");
 const prev_page_url = ref("");
