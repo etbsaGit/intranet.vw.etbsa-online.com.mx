@@ -8,42 +8,36 @@
       icon="add_circle"
     />
   </q-item>
+
   <q-item>
     <q-item-section>
-      <q-table
-        flat
-        bordered
-        title="Estatus"
-        :rows="rows"
-        :columns="columns"
-        row-key="name"
-        dense
-        :rows-per-page-options="[0]"
-      >
-        <template v-slot:body-cell-name="props">
-          <q-td>
-            <q-item dense>
-              <q-item-section avatar>
-                <q-btn
-                  dense
-                  color="primary"
-                  flat
-                  icon="edit_square"
-                  @click="openEdit(props.row)"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>
-                  {{ props.row.name }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ props.row.status_key }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-td>
-        </template>
-      </q-table>
+      <q-list separator>
+        <q-expansion-item
+          v-for="(status, index) in rows"
+          :key="index"
+          :label="index"
+          expand-separator
+          default-opened
+          class="shadow-1 overflow-hidden"
+          header-class="bg-secondary text-white"
+          style="border-radius: 10px"
+        >
+          <q-item v-for="(status_key, index) in status" :key="index">
+            <q-item-section avatar>
+              <q-btn
+                dense
+                color="primary"
+                flat
+                icon="edit_square"
+                @click="openEdit(status_key)"
+              />
+            </q-item-section>
+            <q-item-section>
+              {{ status_key.name }}
+            </q-item-section>
+          </q-item>
+        </q-expansion-item>
+      </q-list>
     </q-item-section>
   </q-item>
 
