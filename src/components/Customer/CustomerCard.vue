@@ -81,12 +81,40 @@
       </div>
     </q-card-section>
 
+    <q-card-section class="card-section">
+      <div class="text-h6 font-weight-bold">Ultimo Seguimiento</div>
+      <q-item>
+        <q-item-section>
+          <div>
+            <strong>Empleado: </strong>
+            {{ customer.lastFollow.employee.fullName }}
+          </div>
+          <div>
+            <strong>Fecha: </strong>
+            {{ formatDateAt(customer.lastFollow.updated_at) }}
+          </div>
+          <div>
+            <strong>Proyecto: </strong>
+            {{ customer.lastFollow.title }}
+          </div>
+          <div>
+            <strong>Ultimo comentario: </strong>
+            {{ customer.lastFollow.comments }}
+          </div>
+          <div>
+            <strong>Retroalimentacion del vendedor: </strong>
+            {{ customer.lastFollow.feedback || "Sin retroalimentacion" }}
+          </div>
+        </q-item-section>
+      </q-item>
+    </q-card-section>
+
     <q-separator />
   </q-card>
 </template>
 
 <script setup>
-import { formatPhoneNumber } from "src/boot/format";
+import { formatPhoneNumber, formatDateAt } from "src/boot/format";
 const { customer } = defineProps(["customer"]);
 </script>
 
