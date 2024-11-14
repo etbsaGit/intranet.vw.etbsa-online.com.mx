@@ -78,6 +78,7 @@
       :active="link === 'customer'"
       @click="link = 'customer'"
       active-class="my-menu-link"
+      v-if="checkPosition('Admin')"
     >
       <q-item-section avatar>
         <q-icon name="group" />

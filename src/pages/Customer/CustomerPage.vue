@@ -44,7 +44,7 @@
           <q-item>
             <q-item-section>
               <q-btn
-                v-if="checkPosition('Gerente')"
+                v-if="checkPosition('Admin')"
                 dense
                 outline
                 label="Asignar clientes"

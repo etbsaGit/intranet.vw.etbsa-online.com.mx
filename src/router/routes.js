@@ -26,6 +26,10 @@ const routes = [
         path: "/catalogos",
         component: () => import("src/pages/Catalogos/IndexPage.vue"),
       },
+      {
+        path: "/customer",
+        component: () => import("src/pages/Customer/CustomerPage.vue"),
+      },
     ],
   },
   {
@@ -39,10 +43,6 @@ const routes = [
       {
         path: "/vehicle",
         component: () => import("src/pages/Vehicle/VehiclePage.vue"),
-      },
-      {
-        path: "/customer",
-        component: () => import("src/pages/Customer/CustomerPage.vue"),
       },
       {
         path: "/profile",

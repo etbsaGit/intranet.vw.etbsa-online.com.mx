@@ -318,7 +318,12 @@
           <q-item-label class="text-h6">{{ selectedItem.title }}</q-item-label>
         </q-item-section>
         <q-item-section side>
-          <q-btn label="Cerrar" color="red" v-close-popup @click="getRows" />
+          <q-btn
+            label="Cerrar"
+            color="red"
+            v-close-popup
+            @click="getRows(current_page)"
+          />
         </q-item-section>
       </q-item>
       <q-separator />
