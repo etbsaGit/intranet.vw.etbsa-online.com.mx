@@ -61,7 +61,7 @@
           clearable
           filled
           dense
-          hint
+          :rules="[(val) => val !== null || 'Obligatorio']"
           @update:model-value="updateMunicipalities(formAgency.state_id)"
         />
       </q-item-section>
@@ -80,7 +80,7 @@
           filled
           dense
           clearable
-          hint
+          :rules="[(val) => val !== null || 'Obligatorio']"
         />
       </q-item-section>
     </q-item>
