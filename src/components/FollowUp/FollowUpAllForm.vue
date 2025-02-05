@@ -38,7 +38,7 @@
             @click="saleActive"
           />
         </q-item-section>
-        <!-- <q-item-section v-if="currentItem.children.length >= 3">
+        <q-item-section v-if="currentItem.children.length >= 3">
           <q-btn
             v-if="
               hasNullFeedback(currentItem.children) &&
@@ -51,7 +51,7 @@
             icon="fas fa-circle-dollar-to-slot"
             @click="saleWin"
           />
-        </q-item-section> -->
+        </q-item-section>
         <q-item-section>
           <q-btn
             v-if="
