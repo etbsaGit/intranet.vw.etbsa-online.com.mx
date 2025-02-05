@@ -334,13 +334,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, inject } from "vue";
 import { sendRequest, notifyIncomplete } from "src/boot/functions";
 import { getNumber } from "src/boot/followUp";
 import { formatDate } from "src/boot/format";
 
 import FollowUpForm from "src/components/FollowUp/FollowUpForm.vue";
 import FollowUpAllForm from "src/components/FollowUp/FollowUpAllForm.vue";
+
+const bus = inject("bus");
 
 const rows = ref([]);
 const selectedItem = ref(null);
@@ -435,6 +437,12 @@ const columns = [
     sortable: true,
   },
 ];
+
+bus.on("follow-delete", () => {
+  selectedItem.value = null;
+  showEdit.value = false;
+  getRows(current_page);
+});
 
 const openEdit = (item) => {
   selectedItem.value = item;

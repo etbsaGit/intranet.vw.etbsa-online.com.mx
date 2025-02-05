@@ -7,6 +7,17 @@
         </q-item-label>
         <q-item-label>{{ followUp.title }}</q-item-label>
       </q-item-section>
+      <q-item-section side>
+        <q-btn
+          v-if="checkRole('Admin')"
+          dense
+          outline
+          label="Borrar seguimiento"
+          color="red-10"
+          icon="fas fa-trash"
+          @click="deleteFollow"
+        />
+      </q-item-section>
       <!-- <q-item-section avatar>
         <q-item-label>
           <q-icon name="far fa-pen-to-square" size="2em" color="blue-6" />
@@ -50,6 +61,21 @@
 </template>
 
 <script setup>
+import { inject } from "vue";
 const { followUp } = defineProps(["followUp"]);
+import { checkRole } from "src/boot/checks";
 import { getNumber, getStatus } from "src/boot/followUp";
+import { sendRequest } from "src/boot/functions";
+
+const bus = inject("bus");
+
+const deleteFollow = async () => {
+  let res = await sendRequest(
+    "DELETE",
+    null,
+    "/api/intranet/followUp/" + followUp.id,
+    ""
+  );
+  bus.emit("follow-delete");
+};
 </script>
