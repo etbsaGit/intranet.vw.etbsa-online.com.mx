@@ -33,6 +33,16 @@
                 @click="showFilters = true"
               />
             </q-item-section>
+            <q-item-section side>
+              <q-btn
+                outline
+                dense
+                color="primary"
+                icon="archive"
+                label="excel"
+                @click="getReportExcel()"
+              />
+            </q-item-section>
           </q-item>
         </template>
         <template v-slot:bottom>
@@ -65,6 +75,26 @@
             />
           </q-td>
         </template>
+        <template v-slot:body-cell-title="props">
+          <q-td>
+            <div
+              v-if="props.row.title.length > 30"
+              class="flex items-center gap-2"
+            >
+              <!-- Texto truncado -->
+              <div class="ellipsis" style="max-width: 200px">
+                {{ props.row.title }}
+              </div>
+              <q-tooltip class="text-h6 bg-primary">
+                {{ props.row.title }}
+              </q-tooltip>
+            </div>
+            <div v-else>
+              {{ props.row.title }}
+            </div>
+          </q-td>
+        </template>
+
         <template v-slot:body-cell-customer="props">
           <q-td>
             {{ props.row.customer.name }}
@@ -190,7 +220,6 @@
             dense
             label="Buscar por titulo"
             v-model="filterForm.search"
-            @update:model-value="onInputChange"
           >
             <template v-slot:prepend>
               <q-icon name="search" />
@@ -249,6 +278,37 @@
       <q-item>
         <q-item-section>
           <q-select
+            v-model="filterForm.percentage_id"
+            :options="percentages"
+            label="Por certeza:"
+            option-value="id"
+            options-dense
+            option-label="name"
+            option-disable="inactive"
+            emit-value
+            map-options
+            transition-show="jump-up"
+            transition-hide="jump-up"
+            outlined
+            dense
+            clearable
+          >
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.name }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-chip outline :color="getNumber(scope.opt.name).color">
+                    {{ getNumber(scope.opt.name).label }}
+                  </q-chip>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-item-section>
+        <q-item-section>
+          <q-select
             v-model="filterForm.status_id"
             :options="statuses"
             label="Estatus"
@@ -300,6 +360,60 @@
             dense
             clearable
           />
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <q-input
+            v-model="filterForm.updated_at"
+            dense
+            outlined
+            label="Por fecha de registro y/o actualizacion"
+            mask="date"
+            readonly
+          >
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="filterForm.updated_at" minimal>
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </q-item-section>
+        <q-item-section>
+          <q-input
+            v-model="filterForm.date"
+            dense
+            outlined
+            label="Por dia de contacto"
+            mask="date"
+            readonly
+          >
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="filterForm.date" minimal>
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
         </q-item-section>
       </q-item>
     </q-card>
@@ -364,6 +478,9 @@ const filterForm = ref({
   vehicle_id: null,
   status_id: null,
   origin_id: null,
+  updated_at: null,
+  percentage_id: null,
+  date: null,
 });
 
 const customers = ref([]);
@@ -456,6 +573,10 @@ const clearFilters = () => {
   filterForm.value.inventory_id = null;
   filterForm.value.status_id = null;
   filterForm.value.origin_id = null;
+  filterForm.value.updated_at = null;
+  filterForm.value.vehicle_id = null;
+  filterForm.value.percentage_id = null;
+  filterForm.value.date = null;
   current_page.value = 1;
   getRows();
 };
@@ -505,6 +626,29 @@ const postItem = async () => {
   showAdd.value = false;
   selectedItem.value = res;
   showEdit.value = true;
+};
+
+const getReportExcel = async () => {
+  const final = {
+    ...filterForm.value,
+  };
+  const res = await sendRequest(
+    "POST",
+    final,
+    "/api/intranet/follow/excel",
+    ""
+  );
+  const base64Response = await fetch(
+    `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${res.base64}`
+  );
+  const blob = await base64Response.blob();
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = res.file_name;
+  link.click();
+  URL.revokeObjectURL(url);
 };
 
 watch(current_page, (newPage) => {

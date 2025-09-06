@@ -52,7 +52,7 @@
           </q-item-label>
           <q-item-label class="text-h6">
             <strong>Unidad de interes:</strong>
-            {{ followUp.lastVehicle.name }}
+            {{ followUp.lastVehicle?.name }}
           </q-item-label>
         </q-item-section>
       </q-item>
